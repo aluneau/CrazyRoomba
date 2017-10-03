@@ -4,6 +4,13 @@ const Readline = SerialPort.parsers.Readline;
 const parser = new Readline("\n");
 const Packet = require("./sensors.js");
 const Data = require("./data.js");
+var fs = require('fs');
+
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 
 
 class Robot extends EventEmitter{
@@ -34,6 +41,14 @@ class Robot extends EventEmitter{
 
 
 		});
+
+        this.port.on("error", function(){
+            console.log("Pas de connexion avec le robot.... passage en mode fakeRobot");
+            var fakeData = JSON.parse(fs.readFileSync('./fakeData.json', 'utf8'));
+            setInterval(function(){
+                that.emit("data", fakeData[getRandomInt(0, fakeData.length)]);
+            }, 50);
+        })
 
 
 
@@ -79,7 +94,7 @@ class Robot extends EventEmitter{
                 //console.log('New packet:', packet.toString());
                 processed += dataSize + 1;
             } else {
-                console.log('Data Stream Error: packet id', packetId, 'does not exist');
+                //console.log('Data Stream Error: packet id', packetId, 'does not exist');
                 break;
             }
         }

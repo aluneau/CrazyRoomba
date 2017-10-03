@@ -3,7 +3,8 @@ class Data {
         if(Array.isArray(data)) { data = packet.parse(data); }
         //if(!packet.validate(data)) { throw new Error(`Data is not valid : ${data}, ${packet.getName()}`); }
 
-        if(!packet.validate(data)) { console.log("paquet invalide"); }
+        if(!packet.validate(data)) { //console.log("paquet invalide"); 
+        }
         this._packet = packet;
         this._data = data;
         this._timestamp = Date.now();
