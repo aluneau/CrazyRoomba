@@ -6,12 +6,20 @@ var io = require('socket.io')(http);
 
 
 
+//Roomba
+roomba = new Robot("/dev/cu.usbserial-A700eXK6");
+
+
 
 //Creatio du serveur web
 app.use(express.static('webApp'));
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+  console.log('A client is connected!');
+  io.emit("connected");
+  socket.on("command", function(buffer){
+    roomba._sendCommand(buffer);
+  })
 });
 
 http.listen(3000, function(){
@@ -20,22 +28,8 @@ http.listen(3000, function(){
 
 
 
-
-//Roomba
-roomba = new Robot("/dev/cu.usbserial-A700eXK6");
-
 roomba.on("connected", function(){
-	console.log("connected");
-	roomba.fullMode();
-    roomba.streamAllSensors();
-    roomba.fullMode();
-    roomba.driveDirect(128,128);
-    setTimeout(function(){
-    	roomba.driveDirect(-128,-128);
-    	setTimeout(function(){
-    		roomba.driveDirect(0,0);
-    	},2000);
-    }, 2000);
+    console.log("Roomba connecté");
 })
 
 roomba.on('data', function(data){
