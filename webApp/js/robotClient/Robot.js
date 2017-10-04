@@ -1,19 +1,27 @@
 class Robot extends EventEmitter{
 	constructor(){
 		super();
-		var that = this;
+        this.dataBinding = null;
 		this.socket = io();
         this.socket.on('data', function(data){
-            that.emit("data", data);
-        });
+            this.emit("data", data);
+            if(this.dataBinding != null){
+                this.dataBinding.emit("data", data);
+            }
+        }.bind(this));
 
         this.socket.on("connected", function(){
-            that.emit("connected");
-        });
+            this.emit("connected");
+        }.bind(this));
 
 
 	}
 
+    bind(dataBinding){
+        this.dataBinding = dataBinding;
+        dataBinding.roomba = this;
+        dataBinding.emit("binded");
+    }
 
 	_sendCommand (buffer){
 		this.socket.emit("command", buffer);
