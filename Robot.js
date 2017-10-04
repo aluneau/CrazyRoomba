@@ -1,6 +1,6 @@
 const SerialPort = require('serialport');
 const EventEmitter = require('events');
-const CircularBuffer = require('./node_modules/cyclic-buffer/build/CyclicBuffer.js').default;
+//const CircularBuffer = require('./node_modules/cyclic-buffer/build/CyclicBuffer.js').default;
 const Readline = SerialPort.parsers.Readline;
 const parser = new Readline("\n");
 const Packet = require("./sensors.js");
