@@ -19,7 +19,7 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
-        this._buffer = new CircularBuffer(1024);
+        //this._buffer = new CircularBuffer(1024);
 
 		this.portName = portName;
 
