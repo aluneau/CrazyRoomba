@@ -16,8 +16,7 @@ class Robot extends EventEmitter{
 
 
 	_sendCommand (buffer){
-		var result = this.socket.emit("command", buffer);
-        console.log(result);
+		this.socket.emit("command", buffer);
 	}
 
     /**
