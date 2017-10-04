@@ -1,9 +1,11 @@
 const SerialPort = require('serialport');
 const EventEmitter = require('events');
+const CircularBuffer = require('./node_modules/cyclic-buffer/build/CyclicBuffer.js').default;
 const Readline = SerialPort.parsers.Readline;
 const parser = new Readline("\n");
 const Packet = require("./sensors.js");
 const Data = require("./data.js");
+
 var fs = require('fs');
 
 
@@ -17,6 +19,8 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
+        this._buffer = new CircularBuffer(1024);
+
 		this.portName = portName;
 
 		this.port = new SerialPort(this.portName, {
@@ -24,6 +28,11 @@ class Robot extends EventEmitter{
 	    	dataBits: 8,
 	    	parity: 'none',
 	    	stopBits: 1,
+            rtscts: false,
+            xon: false,
+            xoff: false,
+            xany: false,
+            parser: this._serialDataParser.bind(this)
 		});
 
 		this.port.on('open', function() {
@@ -76,7 +85,22 @@ class Robot extends EventEmitter{
 
 	_sendCommand (buffer){
 		this.port.write(buffer);
+        this.port.flush();
 	}
+
+
+
+
+
+    _serialDataParser(serial, data) {
+
+        console.log("parser");
+   
+    }
+
+
+
+
 
 	_processSensorData(dataStream) {
         //console.log('Data Stream:', dataStream);

@@ -33,7 +33,7 @@ roomba.on("connected", function(){
 })
 
 roomba.on('data', function(data){
-    if(data.packet.name == "BumpsAndWheelDrops"){
+    if(data!=undefined && data.packet.name == "BumpsAndWheelDrops"){
         console.log("update");
     }
     io.emit('data', data);

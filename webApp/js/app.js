@@ -7,7 +7,7 @@ roomba.on("connected", function(){
 
 	console.log("connected");
 	roomba.fullMode();
-    roomba.streamAllSensors();
+    roomba.streamSensors([7]);
     // roomba.fullMode();
     // roomba.driveDirect(128,128);
 
