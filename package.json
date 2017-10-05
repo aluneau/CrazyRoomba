@@ -1,0 +1,26 @@
+{
+  "name": "crazyroumba",
+  "version": "1.0.0",
+  "description": "[git add .] [git pull] [git commit -m \"on se fait une yellow?\"] [git push]",
+  "main": "Robot.js",
+  "dependencies": {
+    "cyclic-buffer": "^1.0.3",
+    "express": "^4.16.1",
+    "socket.io": "^2.0.3",
+    "serialport": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloudman/CrazyRoumba.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bloudman/CrazyRoumba/issues"
+  },
+  "homepage": "https://github.com/bloudman/CrazyRoumba#readme"
+}
