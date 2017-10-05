@@ -13,7 +13,7 @@ roomba = new Robot("/dev/cu.usbserial-A700eXK6");
 
 
 //Creatio du serveur web
-app.use(express.static('webApp'));
+app.use(express.static(__dirname  + '/webApp'));
 
 io.on('connection', function(socket){
   console.log('A client is connected!');
