@@ -1,6 +1,6 @@
 const SerialPort = require('serialport');
 const EventEmitter = require('events');
-//const CircularBuffer = require('./node_modules/cyclic-buffer/build/CyclicBuffer.js').default;
+const CircularBuffer = require('cyclic-buffer').default;
 const Readline = SerialPort.parsers.Readline;
 const parser = new Readline("\n");
 const Packet = require("./sensors.js");
@@ -19,7 +19,7 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
-        //this._buffer = new CircularBuffer(1024);
+        this._buffer = new CircularBuffer(1024);
 
 		this.portName = portName;
 
@@ -32,7 +32,7 @@ class Robot extends EventEmitter{
             xon: false,
             xoff: false,
             xany: false,
-            parser: this._serialDataParser.bind(this)
+            //parser: this._serialDataParser.bind(this)
 		});
 
 		this.port.on('open', function() {
@@ -61,12 +61,13 @@ class Robot extends EventEmitter{
 
 
 
-		this.port.on('data', function(data){
-			//port.write(new Buffer([137,0x00,0xC8,0x80,0x00]));
-			//console.log(data);
-			//console.log(data[0]);
-			that._processSensorData(data);
-		});
+		this.port.on('data', this._serialDataParser.bind(this));
+
+        this.on("dataSerialised", function(data){
+            this._processSensorData(data);
+        }.bind(this));
+
+        //this.on("errordata", data => console.log("error: " + data) );
 
 		//Fermeture du port 
 		process.on('SIGINT', function() {
@@ -92,10 +93,41 @@ class Robot extends EventEmitter{
 
 
 
-    _serialDataParser(serial, data) {
+    _serialDataParser(data) {
+        this._buffer.put(data);
+        var oldBufferSize = 0;
+        while(this._buffer.size() > 0 && oldBufferSize !== this._buffer.size()) {
+            oldBufferSize = this._buffer.size();
+            let index = 0;
+            while(index < this._buffer.size() && 19 !== this._buffer[index]) {
+                ++index;
+            }
+            if(0 < index) { 
+                let unparsableData = this._buffer.get(index);
+                //this.port.emit('data', unparsableData); 
+            }
+            
+            if(this._buffer.size() > 2 && this._buffer.size() >= this._buffer[1] + 3) {
+                let streamSize = this._buffer[1] + 3;
+                //debug('buffer size', this._buffer.remaining(), '; splice size:', streamSize);
+                let sensorData = this._buffer.get(streamSize);
+                let checksum = 0;
+                for(let i = 0; i < sensorData[1]+3; ++i) {
+                    checksum += sensorData[i];
+                }
+                checksum %= 256;
+                if(0 === checksum) {
+                    this.emit('dataSerialised', sensorData);
+                } else {
+                    this.emit('errordata', sensorData, checksum);
+                }
+            } else {
+                break;
+            }
+        }
 
-        console.log("parser");
-   
+
+        //this.emit("dataSerialised", data);
     }
 
 
@@ -103,6 +135,7 @@ class Robot extends EventEmitter{
 
 
 	_processSensorData(dataStream) {
+        //console.log('valid stream ; size :',dataStream[1]);
         //console.log('Data Stream:', dataStream);
         dataStream = [...dataStream];
         var streamCode = dataStream.shift(); // 19
@@ -118,7 +151,7 @@ class Robot extends EventEmitter{
                 //console.log('New packet:', packet.toString());
                 processed += dataSize + 1;
             } else {
-                //console.log('Data Stream Error: packet id', packetId, 'does not exist');
+                console.log('Data Stream Error: packet id', packetId, 'does not exist');
                 break;
             }
         }
@@ -244,6 +277,52 @@ class Robot extends EventEmitter{
     }
 
 }
+
+Robot.demos = {
+    'abort': 255,
+    'cover': 0,
+    'cover-and-dock': 1,
+    'spot-cover': 2,
+    'mouse': 3,
+    'drive-figure-eight': 4,
+    'wimp': 5,
+    'home': 6,
+    'tag': 7,
+    'pachelbel': 8,
+    'banjo': 9
+};
+
+Robot.leds = {
+    'advance': 8,
+    'play': 2
+};
+
+
+
+Robot.events = {
+    'wheel-drop': 1,
+    'front-wheel-drop': 2,
+    'left-wheel-drop': 3,
+    'right-wheel-drop': 4,
+    'bump': 5,
+    'left-bump': 6,
+    'right-bump': 7,
+    'virtual-wall': 8,
+    'wall': 9,
+    'cliff': 10,
+    'left-cliff': 11,
+    'front-left-cliff': 12,
+    'front-right-cliff': 13,
+    'right-cliff': 14,
+    'home-base': 15,
+    'advance-button': 16,
+    'play-button': 17,
+    'digital-output-0': 18,
+    'digital-output-1': 19,
+    'digital-output-2': 20,
+    'digital-output-3': 21,
+    'passive': 22,
+};
 
 Robot.sensorPackets = {
     7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]), 

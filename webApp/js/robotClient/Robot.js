@@ -3,10 +3,10 @@ class Robot extends EventEmitter{
 		super();
         this.dataBinding = null;
 		this.socket = io();
-        this.socket.on('data', function(data){
-            this.emit("data", data);
+        this.socket.on('datas', function(datas){
+            this.emit("datas", datas);
             if(this.dataBinding != null){
-                this.dataBinding.emit("data", data);
+                this.dataBinding.emit("datas", datas);
             }
         }.bind(this));
 

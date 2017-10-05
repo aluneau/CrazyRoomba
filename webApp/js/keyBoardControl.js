@@ -3,7 +3,7 @@ var mg = 0; //moteur Gauche
 var ma = 0;
 var step = 5;
 
-var speed = 727;
+var speed = 500;
 
 var keyPressed = false;
 

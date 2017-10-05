@@ -4,6 +4,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var datas = new Map();
 
 
 //Roomba
@@ -33,11 +34,23 @@ roomba.on("connected", function(){
 })
 
 roomba.on('data', function(data){
-    if(data!=undefined && data.packet.name == "BumpsAndWheelDrops"){
-        console.log("update");
+    // if(data != undefined && data.packet.name == 'WallSignal'){
+    //   console.log('update');
+    // }
+    if(data != undefined){
+      datas.set(data.packet.name, data.data);
     }
-    io.emit('data', data);
     //console.log(JSON.stringify(data));
     //console.log(',');
 });
 
+
+setInterval(function(){
+    let JSONArray = [];
+
+    for (let [key, value] of datas){
+
+        JSONArray.push({name: key, value: value});
+    }
+    io.emit('datas', JSONArray);
+}, 50);
