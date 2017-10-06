@@ -51,8 +51,6 @@ The connection to socket.io is implicit.
 var roomba = new Robot();
 
 roomba.on("connected", function(){
-    console.log("Connecté");
-
     console.log("connected");
     roomba.fullMode();
     roomba.streamAllSensors();
