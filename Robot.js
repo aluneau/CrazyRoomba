@@ -77,7 +77,7 @@ class Robot extends EventEmitter{
 
         //this.on("errordata", data => console.log("error: " + data) );
 
-        this.changeEmitInterval(50);
+        this.changeInterval(50);
 
 		//Fermeture du port 
 		process.on('SIGINT', function() {
@@ -99,7 +99,7 @@ class Robot extends EventEmitter{
         this.port.flush();
 	}
 
-    changeEmitInterval(interval){
+    changeInterval(interval){
         if(this.emitInterval != null){
             clearInterval(this.emitInterval);
         }
@@ -111,6 +111,7 @@ class Robot extends EventEmitter{
                 JSONArray.push({name: key, value: value});
             }
             if(this.io != null){
+                this.emit('datas', JSONArray);
                 this.io.emit('datas', JSONArray);
             }
         }.bind(this), interval);
@@ -193,6 +194,7 @@ class Robot extends EventEmitter{
                 processed += dataSize + 1;
             } else {
                 console.log('Data Stream Error: packet id', packetId, 'does not exist');
+                this.emit('packetNotFound', packetId);
                 break;
             }
         }

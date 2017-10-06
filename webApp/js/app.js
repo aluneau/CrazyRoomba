@@ -69,8 +69,6 @@ app.controller('RoombaController', function($scope){
         console.log("connected");
         this.roomba.safeMode();
         this.roomba.streamAllSensors();
-
-        this.roomba.changeInterval(1000);
         // roomba.fullMode();
         // roomba.driveDirect(128,128);
 
