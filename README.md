@@ -45,6 +45,7 @@ It is based on socket.io.
 ### Client base code:
 
 This code will connect you to the robot, stream all sensors, put it in fullMode and will make it move.
+The connection to socket.io is implicit.
 
 ```js
 var roomba = new Robot();
