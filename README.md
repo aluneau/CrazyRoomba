@@ -1,9 +1,9 @@
-#CrazyRoomba
+# CrazyRoomba
 
-##Basic installation:
+## Basic installation:
 ``git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install``
 
-##Base server code
+## Base server code
 ```
 var Robot = require("./Robot.js");
 var express = require('express');
@@ -37,12 +37,12 @@ roomba.on("connected", function(){
 This simple code start a robot instance and connects it to socket.io
 
 
-##What the principle of the library
+## What the principle of the library
 
 This library will allow you to speak with roomba from the server side or from the client side with almost exactly the same code.
 It is based on socket.io.
 
-###Client base code:
+### Client base code:
 
 This code will connect you to the robot, stream all sensors, put it in fullMode and will make it move.
 
@@ -72,7 +72,7 @@ roomba.on("datas", function(datas){
 });
 ```
 
-###Difference between client side and server side
+### Difference between client side and server side
 
 The only difference between server and client side is the syncrhonisation of datas.
 To avoid socket.io surcharge datas are send from the server to the client only every <b>50ms</b> by default.
@@ -81,7 +81,7 @@ You can change this from the client or from the server with using this command:
 roomba.changeInterval(interval in ms)
 ```
 
-##What can you ask to the robot?
+## What can you ask to the robot?
 
 With this library you can ask for pretty much everything roomba can do or send you back.
 Here is the method list avaiable from the client side or from the server side:
@@ -141,7 +141,7 @@ Resume streaming after pause
 #### `waitEvent(event)`
 ***
 
-##Sensors we can use:
+## Sensors we can use:
 These event are not library event but events to emit via waitEvent(event).
 <table>
 	<tr>
@@ -184,7 +184,7 @@ These event are not library event but events to emit via waitEvent(event).
 	<tr><td>LeftVelocity</td><td>42</td><td></td></tr>
 </table>
 
-##Events from the robot:
+## Events from the robot:
 <table>
 	<tr><th>EventName</th><th>Id</th></tr>
 	<tr><td>wheel-drop</td><td>1</td></tr>
@@ -211,7 +211,7 @@ These event are not library event but events to emit via waitEvent(event).
 	<tr><td>passive</td><td>22</td></tr>
 </table>
 
-##Differents demos:
+## Differents demos:
 <table>
 	<tr><th>DemoName</th><th>Id</th></tr>
 	<tr><td>abort</td><td>255</td></tr>
@@ -227,7 +227,7 @@ These event are not library event but events to emit via waitEvent(event).
 	<tr><td>banjo</td><td>9</td></tr>
 </table>
 
-##Events from the library
+## Events from the library
 The library is based on EventEmitter (client side and server side). So you can track an event like this:
 	
 	roomba.on('event', function(data){
@@ -253,10 +253,10 @@ The received data does not correspond to any sensor of the list... we drop the d
 
 
 
-##What happens when the robot is not correctly connected?
+## What happens when the robot is not correctly connected?
 When the robot is not correctly connected the server will run in "FakeRobot mode". It will send to the client fake data for debugging purposes.
 
-##What's in the webApp folder?
+## What's in the webApp folder?
 There's a simple angularjs 1.6 app wich allow you to show every sensors in HTML table and controll it with your keyboard. (using zqzd)
 
 
