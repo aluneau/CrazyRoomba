@@ -21,7 +21,6 @@ app.controller('RoombaController', function($scope){
     this.md = 0;
     this.speed = 400;
     this.roomba = new Robot();
-
     $scope.keyPressed = function(e) {
         console.log("keyPressed");
         $scope.keyCode = e.which;
@@ -70,6 +69,8 @@ app.controller('RoombaController', function($scope){
         console.log("connected");
         this.roomba.safeMode();
         this.roomba.streamAllSensors();
+
+        this.roomba.changeInterval(1000);
         // roomba.fullMode();
         // roomba.driveDirect(128,128);
 

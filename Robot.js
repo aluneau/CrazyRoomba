@@ -19,6 +19,8 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
+        this.io = null;
+        this.emitInterval = null;
         this._buffer = new CircularBuffer(1024);
 
 		this.portName = portName;
@@ -34,6 +36,8 @@ class Robot extends EventEmitter{
             xany: false,
             //parser: this._serialDataParser.bind(this)
 		});
+
+        this.datas = new Map();
 
 		this.port.on('open', function() {
 			console.log("port ouvert");
@@ -59,7 +63,11 @@ class Robot extends EventEmitter{
             }, 50);
         })
 
-
+        this.on('data', function(data){
+            if(data != undefined){
+              this.datas.set(data.packet.name, data.data);
+            }
+        }.bind(this));
 
 		this.port.on('data', this._serialDataParser.bind(this));
 
@@ -68,6 +76,8 @@ class Robot extends EventEmitter{
         }.bind(this));
 
         //this.on("errordata", data => console.log("error: " + data) );
+
+        this.changeEmitInterval(50);
 
 		//Fermeture du port 
 		process.on('SIGINT', function() {
@@ -89,8 +99,39 @@ class Robot extends EventEmitter{
         this.port.flush();
 	}
 
+    changeEmitInterval(interval){
+        if(this.emitInterval != null){
+            clearInterval(this.emitInterval);
+        }
+        this.emitInterval = setInterval(function(){
+            let JSONArray = [];
 
+            for (let [key, value] of this.datas){
 
+                JSONArray.push({name: key, value: value});
+            }
+            if(this.io != null){
+                this.io.emit('datas', JSONArray);
+            }
+        }.bind(this), interval);
+    }
+
+    connect(io){
+        this.io = io;
+
+         this.io.on('connection', function(socket){
+          console.log('A client is connected!');
+          this.io.emit("connected");
+          socket.on("command", function(buffer){
+            this._sendCommand(buffer);
+          }.bind(this));
+
+            socket.on("changeEmitionInterval", function(newInterval){
+                this.changeEmitInterval(newInterval);
+            }.bind(this));
+        }.bind(this));
+
+    }
 
 
     _serialDataParser(data) {

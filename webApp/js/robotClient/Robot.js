@@ -17,6 +17,10 @@ class Robot extends EventEmitter{
 
 	}
 
+    changeInterval(newInterval){
+        this.socket.emit("changeEmitionInterval", newInterval);
+    }
+
     bind(dataBinding){
         this.dataBinding = dataBinding;
         dataBinding.roomba = this;
@@ -136,6 +140,53 @@ class Robot extends EventEmitter{
     }
 
 }
+
+
+Robot.demos = {
+    'abort': 255,
+    'cover': 0,
+    'cover-and-dock': 1,
+    'spot-cover': 2,
+    'mouse': 3,
+    'drive-figure-eight': 4,
+    'wimp': 5,
+    'home': 6,
+    'tag': 7,
+    'pachelbel': 8,
+    'banjo': 9
+};
+
+Robot.leds = {
+    'advance': 8,
+    'play': 2
+};
+
+
+
+Robot.events = {
+    'wheel-drop': 1,
+    'front-wheel-drop': 2,
+    'left-wheel-drop': 3,
+    'right-wheel-drop': 4,
+    'bump': 5,
+    'left-bump': 6,
+    'right-bump': 7,
+    'virtual-wall': 8,
+    'wall': 9,
+    'cliff': 10,
+    'left-cliff': 11,
+    'front-left-cliff': 12,
+    'front-right-cliff': 13,
+    'right-cliff': 14,
+    'home-base': 15,
+    'advance-button': 16,
+    'play-button': 17,
+    'digital-output-0': 18,
+    'digital-output-1': 19,
+    'digital-output-2': 20,
+    'digital-output-3': 21,
+    'passive': 22,
+};
 
 Robot.sensorPackets = {
     7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]), 
