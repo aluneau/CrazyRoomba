@@ -1,6 +1,6 @@
 #CrazyRoomba
 ##Basic installation:
-``git clone https://github.com/bloudman/CrazyRoumba.git && cd CrazyRoubma && npm install``
+``git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install``
 ##Base server code
 ```
 var Robot = require("./Robot.js");
