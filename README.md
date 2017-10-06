@@ -1,6 +1,8 @@
 #CrazyRoomba
+
 ##Basic installation:
 ``git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install``
+
 ##Base server code
 ```
 var Robot = require("./Robot.js");
@@ -36,10 +38,12 @@ This simple code start a robot instance and connects it to socket.io
 
 
 ##What the principle of the library
+
 This library will allow you to speak with roomba from the server side or from the client side with almost exactly the same code.
 It is based on socket.io.
 
 ###Client base code:
+
 This code will connect you to the robot, stream all sensors, put it in fullMode and will make it move.
 
 ```var roomba = new Robot();
@@ -69,6 +73,7 @@ roomba.on("datas", function(datas){
 ```
 
 ###Difference between client side and server side
+
 The only difference between server and client side is the syncrhonisation of datas.
 To avoid socket.io surcharge datas are send from the server to the client only every <b>50ms</b> by default.
 You can change this from the client or from the server with using this command:
@@ -77,6 +82,7 @@ roomba.changeInterval(interval in ms)
 ```
 
 ##What can you ask to the robot?
+
 With this library you can ask for pretty much everything roomba can do or send you back.
 Here is the method list avaiable from the client side or from the server side:
 
