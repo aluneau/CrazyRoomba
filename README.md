@@ -1,7 +1,7 @@
 # CrazyRoomba
 
 ## Basic installation:
-``git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install``
+`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install`
 
 ## Base server code
 ```js
@@ -34,7 +34,7 @@ roomba.on("connected", function(){
 
 
 ```
-This simple code start a robot instance and connects it to socket.io
+This simple code starts a robot instance and connects it to socket.io
 
 
 ## What the principle of the library
@@ -75,17 +75,16 @@ roomba.on("datas", function(datas){
 
 ### Difference between client side and server side
 
-The only difference between server and client side is the syncrhonisation of datas.
+The only difference between server and client side is the synchronization of datas.
 To avoid socket.io surcharge datas are send from the server to the client only every <b>50ms</b> by default.
-You can change this from the client or from the server with using this command:
+You can change this from the client or from the server side using this command:
 ```js
 roomba.changeInterval(interval in ms)
 ```
 
 ## What can you ask to the robot?
 
-With this library you can ask for pretty much everything roomba can do or send you back.
-Here is the method list avaiable from the client side or from the server side:
+With this library you can ask pretty much everything. Here is the method list available from the client side or from the server side:
 
 #### `_sendCommand(buffer)`
 Send a buffer command to the robot
@@ -143,7 +142,6 @@ Resume streaming after pause
 ***
 
 ## Sensors we can use:
-These event are not library event but events to emit via waitEvent(event).
 <table>
 	<tr>
 	<th>SensorName</th>
@@ -186,6 +184,8 @@ These event are not library event but events to emit via waitEvent(event).
 </table>
 
 ## Events from the robot:
+These events are not library ones but events to emit via waitEvent(event).
+
 <table>
 	<tr><th>EventName</th><th>Id</th></tr>
 	<tr><td>wheel-drop</td><td>1</td></tr>
@@ -241,7 +241,7 @@ roomba.on('event', function(data){
 This event is send when the robot is connected
 ***
 #### `datas`
-Retreive the array of asked sensors every 50ms (by default see changeEmission interval to change default settings)
+Retrieve the array of asked sensors every 50ms (by default see changeEmission interval to change default settings)
 ***
 ### Server side only
 #### `data`
@@ -260,8 +260,7 @@ The received data does not correspond to any sensor of the list... we drop the d
 When the robot is not correctly connected the server will run in "FakeRobot mode". It will send to the client fake data for debugging purposes.
 
 ## What's in the webApp folder?
-There's a simple angularjs 1.6 app wich allow you to show every sensors in HTML table and controll it with your keyboard. (using zqzd)
-
+There is a simple angularjs 1.6 app which allow you to show every sensors in HTML table and control it with your keyboard. (using zqzd)
 
 
 
