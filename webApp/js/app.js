@@ -1,5 +1,8 @@
 var app = angular.module('CrazyRoomba', []);
 
+
+
+//Directive for the gestion of shortcuts
 app.directive('shortcut', function() {
   return {
     restrict: 'E',
@@ -16,11 +19,21 @@ app.directive('shortcut', function() {
   };
 });
 
+
+
+
 app.controller('RoombaController', function($scope){
+    //Motor speed
     this.md = 0;
     this.md = 0;
+
+    //MaxSpeed
     this.speed = 400;
+
+    //Init roomba instance. The connection to socket.io is implicit
     this.roomba = new Robot();
+
+    //Retreive keyPress event and perform different actions
     $scope.keyPressed = function(e) {
         console.log("keyPressed");
         $scope.keyCode = e.which;
@@ -53,6 +66,8 @@ app.controller('RoombaController', function($scope){
         }
     }.bind(this);
 
+
+    //Reteive keyUp event
     $scope.keyUp = function(e) {
         console.log("keyUp");
         $scope.keyCode = e.wich;
@@ -63,31 +78,24 @@ app.controller('RoombaController', function($scope){
 
 
 
+    //On connection to the server
     this.roomba.on("connected", function(){
-        console.log("Connecté");
-
         console.log("connected");
+        //We put roomba in safemode
         this.roomba.safeMode();
+        //And ask him to stream all sensors
         this.roomba.streamAllSensors();
-        // roomba.fullMode();
-        // roomba.driveDirect(128,128);
-
-        // setTimeout(function(){
-        //  roomba.driveDirect(-128,-128);
-        //  setTimeout(function(){
-        //      roomba.driveDirect(0,0);
-        //  },2000);
-        // }, 2000);
-
-        //this.roomba.bind(arrayListener);
 
     }.bind(this));
 
+
+    //On data update
     this.roomba.on("datas", function(datas){
+        //Update the model
         this.datas = datas;
+
+        //force update the view
         $scope.$apply();
-        //console.log(this.datas);
-        //console.log(JSON.stringify(this.datas));
     }.bind(this));
 
 });

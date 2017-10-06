@@ -2,9 +2,15 @@ class Robot extends EventEmitter{
 	constructor(){
 		super();
         this.dataBinding = null;
+
+        //Initialise socket.io
 		this.socket = io();
+
+        //When receive datas from server
         this.socket.on('datas', function(datas){
+            //redirect datas to the object
             this.emit("datas", datas);
+
             if(this.dataBinding != null){
                 this.dataBinding.emit("datas", datas);
             }

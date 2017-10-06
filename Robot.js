@@ -9,6 +9,7 @@ const Data = require("./data.js");
 var fs = require('fs');
 
 
+//Return a random between min and max
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -25,6 +26,8 @@ class Robot extends EventEmitter{
 
 		this.portName = portName;
 
+
+        //Configuration of serialPort
 		this.port = new SerialPort(this.portName, {
 			baudRate: 57600,
 	    	dataBits: 8,
@@ -34,52 +37,57 @@ class Robot extends EventEmitter{
             xon: false,
             xoff: false,
             xany: false,
-            //parser: this._serialDataParser.bind(this)
 		});
 
+        //Assoc array wich contains fresh data from the robot. (syncrhonised in real time!)
         this.datas = new Map();
 
+
 		this.port.on('open', function() {
-			console.log("port ouvert");
-			//port.write([128,132,136,8]);
-		
+			console.log("Port opened");		
             that.emit("connected");
 
 
-            // that._sendCommand(new Buffer([128, 132]));
-			// that._sendCommand(new Buffer([136, 8]));
-			// setInterval(function(){
-			// 	that._sendCommand(new Buffer([149, 2, 10, 11])); //Clift right and left
-			// }, 50);
-
-
 		});
 
+        //When serial communication return an error i.e when the robot is not connected
         this.port.on("error", function(){
-            console.log("Pas de connexion avec le robot.... passage en mode fakeRobot");
+            console.log("No robot connexion.... fakeRobot mode");
+
+            //Read the file fakeData.json contains a set of fakeData
             var fakeData = JSON.parse(fs.readFileSync('./fakeData.json', 'utf8'));
+
+            //Send a fake data every 50ms
             setInterval(function(){
                 that.emit("data", fakeData[getRandomInt(0, fakeData.length)]);
             }, 50);
         })
 
+        //When a data is retrived correct and serialised
         this.on('data', function(data){
             if(data != undefined){
+              //We update the assoc array 
               this.datas.set(data.packet.name, data.data);
             }
         }.bind(this));
 
+
+        //On reception of brute data from the robot. (Hexa buffer)
 		this.port.on('data', this._serialDataParser.bind(this));
 
+        //When data is checked and is ok
         this.on("dataSerialised", function(data){
+            //lauch the parsing function
             this._processSensorData(data);
         }.bind(this));
 
         //this.on("errordata", data => console.log("error: " + data) );
 
+        //Init the socketIo emission of datas every 50ms (default value);
         this.changeInterval(50);
 
-		//Fermeture du port 
+		
+        //When the app is killed we take care of closing the serial port 
 		process.on('SIGINT', function() {
 		    console.log("Caught interrupt signal");
 		    that.port.flush(function(){
@@ -94,15 +102,19 @@ class Robot extends EventEmitter{
 	}
 
 
+    //Main function to send data to the robot.
 	_sendCommand (buffer){
 		this.port.write(buffer);
         this.port.flush();
 	}
 
+    //Change the interval of emission to client
     changeInterval(interval){
         if(this.emitInterval != null){
             clearInterval(this.emitInterval);
         }
+
+        //Every "interval" time emit datas to the client
         this.emitInterval = setInterval(function(){
             let JSONArray = [];
 
@@ -117,24 +129,30 @@ class Robot extends EventEmitter{
         }.bind(this), interval);
     }
 
+
+    //Init socket.io connection
     connect(io){
         this.io = io;
+        this.io.on('connection', function(socket){
+            //Client is connected
+            console.log('A client is connected!');
+            this.io.emit("connected");
 
-         this.io.on('connection', function(socket){
-          console.log('A client is connected!');
-          this.io.emit("connected");
-          socket.on("command", function(buffer){
-            this._sendCommand(buffer);
-          }.bind(this));
+            //On command reception
+            socket.on("command", function(buffer){
+                //We pass the command to the robot
+                this._sendCommand(buffer);
+            }.bind(this));
 
             socket.on("changeEmitionInterval", function(newInterval){
                 this.changeEmitInterval(newInterval);
             }.bind(this));
         }.bind(this));
-
     }
 
 
+
+    //Get data from the robot and check if they are correct
     _serialDataParser(data) {
         this._buffer.put(data);
         var oldBufferSize = 0;
@@ -167,15 +185,12 @@ class Robot extends EventEmitter{
                 break;
             }
         }
-
-
-        //this.emit("dataSerialised", data);
     }
 
 
 
 
-
+    //Parse the corrects datas in to a json object
 	_processSensorData(dataStream) {
         //console.log('valid stream ; size :',dataStream[1]);
         //console.log('Data Stream:', dataStream);
