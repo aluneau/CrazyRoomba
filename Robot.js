@@ -24,31 +24,31 @@ class Robot extends EventEmitter{
         this.emitInterval = null;
         this._buffer = new CircularBuffer(1024);
 
-		this.portName = portName;
+        this.portName = portName;
 
 
         //Configuration of serialPort
-		this.port = new SerialPort(this.portName, {
-			baudRate: 57600,
-	    	dataBits: 8,
-	    	parity: 'none',
-	    	stopBits: 1,
-            rtscts: false,
-            xon: false,
-            xoff: false,
-            xany: false,
-		});
+        this.port = new SerialPort(this.portName, {
+           baudRate: 57600,
+           dataBits: 8,
+           parity: 'none',
+           stopBits: 1,
+           rtscts: false,
+           xon: false,
+           xoff: false,
+           xany: false,
+        });
 
         //Assoc array wich contains fresh data from the robot. (syncrhonised in real time!)
         this.datas = new Map();
 
 
-		this.port.on('open', function() {
-			console.log("Port opened");		
-            that.emit("connected");
+        this.port.on('open', function() {
+           console.log("Port opened");		
+           that.emit("connected");
 
 
-		});
+        });
 
         //When serial communication return an error i.e when the robot is not connected
         this.port.on("error", function(){
@@ -73,7 +73,7 @@ class Robot extends EventEmitter{
 
 
         //On reception of brute data from the robot. (Hexa buffer)
-		this.port.on('data', this._serialDataParser.bind(this));
+        this.port.on('data', this._serialDataParser.bind(this));
 
         //When data is checked and is ok
         this.on("dataSerialised", function(data){
@@ -86,27 +86,27 @@ class Robot extends EventEmitter{
         //Init the socketIo emission of datas every 50ms (default value);
         this.changeInterval(50);
 
-		
+
         //When the app is killed we take care of closing the serial port 
-		process.on('SIGINT', function() {
-		    console.log("Caught interrupt signal");
-		    that.port.flush(function(){
-		    	that.port.close(function(){
-					process.exit();
-		    	});
-		    });
-		    
-		});
+        process.on('SIGINT', function() {
+          console.log("Caught interrupt signal");
+          that.port.flush(function(){
+           that.port.close(function(){
+             process.exit();
+         });
+       });
+
+      });
 
 
-	}
+    }
 
 
     //Main function to send data to the robot.
-	_sendCommand (buffer){
-		this.port.write(buffer);
-        this.port.flush();
-	}
+    _sendCommand (buffer){
+      this.port.write(buffer);
+      this.port.flush();
+    }
 
     //Change the interval of emission to client
     changeInterval(interval){
@@ -191,7 +191,7 @@ class Robot extends EventEmitter{
 
 
     //Parse the corrects datas in to a json object
-	_processSensorData(dataStream) {
+    _processSensorData(dataStream) {
         //console.log('valid stream ; size :',dataStream[1]);
         //console.log('Data Stream:', dataStream);
         dataStream = [...dataStream];
