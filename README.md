@@ -4,7 +4,7 @@
 ``git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install``
 
 ## Base server code
-```
+```js
 var Robot = require("./Robot.js");
 var express = require('express');
 var app = express();
@@ -46,7 +46,8 @@ It is based on socket.io.
 
 This code will connect you to the robot, stream all sensors, put it in fullMode and will make it move.
 
-```var roomba = new Robot();
+```js
+var roomba = new Robot();
 
 roomba.on("connected", function(){
 	console.log("Connecté");
@@ -77,7 +78,7 @@ roomba.on("datas", function(datas){
 The only difference between server and client side is the syncrhonisation of datas.
 To avoid socket.io surcharge datas are send from the server to the client only every <b>50ms</b> by default.
 You can change this from the client or from the server with using this command:
-```
+```js
 roomba.changeInterval(interval in ms)
 ```
 
@@ -229,10 +230,12 @@ These event are not library event but events to emit via waitEvent(event).
 
 ## Events from the library
 The library is based on EventEmitter (client side and server side). So you can track an event like this:
-	
-	roomba.on('event', function(data){
-		console.log(data);
-	});
+
+```js
+roomba.on('event', function(data){
+	console.log(data);
+});
+```
 ### Client and server side:
 #### `connected`
 This event is send when the robot is connected
