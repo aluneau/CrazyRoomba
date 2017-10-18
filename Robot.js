@@ -44,7 +44,7 @@ class Robot extends EventEmitter{
 
 
         this.port.on('open', function() {
-           console.log("Port opened");		
+           console.log("Port opened");
            that.emit("connected");
 
 
@@ -66,8 +66,15 @@ class Robot extends EventEmitter{
         //When a data is retrived correct and serialised
         this.on('data', function(data){
             if(data != undefined){
-              //We update the assoc array 
-              this.datas.set(data.packet.name, data.data);
+              //We update the assoc array
+              if(data.packet.name == "Distance"){
+                console.log("distance", data.data);
+                if(data.data != 0){
+                  this.datas.set(data.packet.name, data.data);
+                }
+              }else{
+                this.datas.set(data.packet.name, data.data);
+              }
             }
         }.bind(this));
 
@@ -81,22 +88,22 @@ class Robot extends EventEmitter{
             this._processSensorData(data);
         }.bind(this));
 
-        //this.on("errordata", data => console.log("error: " + data) );
+        this.on("errordata", data => console.log("error: " + data) );
 
         //Init the socketIo emission of datas every 50ms (default value);
         this.changeInterval(50);
 
 
-        //When the app is killed we take care of closing the serial port 
-        process.on('SIGINT', function() {
-          console.log("Caught interrupt signal");
-          that.port.flush(function(){
-           that.port.close(function(){
-             process.exit();
-         });
-       });
+        //When the app is killed we take care of closing the serial port
+      //   process.on('SIGINT', function() {
+      //     console.log("Caught interrupt signal");
+      //     that.port.flush(function(){
+      //      that.port.close(function(){
+      //        process.exit();
+      //    });
+      //  });
 
-      });
+      //});
 
 
     }
@@ -162,11 +169,11 @@ class Robot extends EventEmitter{
             while(index < this._buffer.size() && 19 !== this._buffer[index]) {
                 ++index;
             }
-            if(0 < index) { 
+            if(0 < index) {
                 let unparsableData = this._buffer.get(index);
-                //this.port.emit('data', unparsableData); 
+                //this.port.emit('data', unparsableData);
             }
-            
+
             if(this._buffer.size() > 2 && this._buffer.size() >= this._buffer[1] + 3) {
                 let streamSize = this._buffer[1] + 3;
                 //debug('buffer size', this._buffer.remaining(), '; splice size:', streamSize);
@@ -185,10 +192,7 @@ class Robot extends EventEmitter{
                 break;
             }
         }
-    }
-
-
-
+}
 
     //Parse the corrects datas in to a json object
     _processSensorData(dataStream) {
@@ -203,6 +207,10 @@ class Robot extends EventEmitter{
             if(Robot.sensorPackets[packetId]) {
                 let dataSize = Robot.sensorPackets[packetId].getDataSize();
                 let data = dataStream.splice(0, dataSize);
+                if(packetId == 19){
+
+                  console.log("distance: ", data);
+                }
                 let packet = new Data(Robot.sensorPackets[packetId], data);
                 this.emit('data', packet.toJSON());
                 //console.log('New packet:', packet.toString());
@@ -217,25 +225,25 @@ class Robot extends EventEmitter{
 
 
     /**
-     * 
+     *
      */
     passiveMode() {
         this._sendCommand([128]);
     }
     /**
-     * 
+     *
      */
     safeMode() {
-        this._sendCommand([128,131]);        
+        this._sendCommand([128,131]);
     }
     /**
-     * 
+     *
      */
     fullMode() {
         this._sendCommand([128,132]);
     }
     /**
-     * 
+     *
      */
     sing(notes) {
         var song = [];//new Array(notes.length * 2 + 3);
@@ -247,7 +255,7 @@ class Robot extends EventEmitter{
         this._sendCommand([141,0]);
     }
     /**
-     * 
+     *
      */
     drive(velocity, radius, direct = false) {
         if(direct) { this.driveDirect(velocity, radius); }
@@ -256,7 +264,7 @@ class Robot extends EventEmitter{
         this._sendCommand([137, (velocity >> 8) & 255, velocity & 255, (radius >> 8) & 255, radius & 255]);
     }
     /**
-     * 
+     *
      */
     driveDirect(left, right) {
         left = parseInt(left);
@@ -264,14 +272,14 @@ class Robot extends EventEmitter{
         this._sendCommand([145, (left >> 8) & 255, left & 255, (right >> 8) & 255, right & 255]);
     }
     /**
-     * 
+     *
      */
     stop() {
         this.driveDirect(0,0);
         this.startDemo('abort');
     }
     /**
-     * 
+     *
      */
     startDemo(number) {
         if('string' === typeof number) { number = Robot.demos[number] || Robot.demos['abort']; }
@@ -383,28 +391,28 @@ Robot.events = {
 };
 
 Robot.sensorPackets = {
-    7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]), 
-    8: new Packet(8, 'Wall', 1, [0, 1]), 
-    9: new Packet(9, 'CliffLeft', 1, [0, 1]), 
-    10: new Packet(10, 'CliffFrontLeft', 1, [0, 1]), 
-    11: new Packet(11, 'CliffFrontRight', 1, [0, 1]), 
-    12: new Packet(12, 'CliffRight', 1, [0, 1]), 
-    13: new Packet(13, 'VirtualWall', 1, [0, 1]), 
-    14: new Packet(14, 'Overcurrents', 1, [0, 31]), 
-    17: new Packet(17, 'IRByte', 1, [0, 255]), 
+    7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]),
+    8: new Packet(8, 'Wall', 1, [0, 1]),
+    9: new Packet(9, 'CliffLeft', 1, [0, 1]),
+    10: new Packet(10, 'CliffFrontLeft', 1, [0, 1]),
+    11: new Packet(11, 'CliffFrontRight', 1, [0, 1]),
+    12: new Packet(12, 'CliffRight', 1, [0, 1]),
+    13: new Packet(13, 'VirtualWall', 1, [0, 1]),
+    14: new Packet(14, 'Overcurrents', 1, [0, 31]),
+    17: new Packet(17, 'IRByte', 1, [0, 255]),
     18: new Packet(18, 'Buttons', 1, [0, 15]),
-    19: new Packet(19, 'Distance', 2, [-32768, 32767], 'mm'), 
-    20: new Packet(20, 'Angle', 2, [-32768, 32767], 'mm'), 
+    19: new Packet(19, 'Distance', 2, [-32768, 32767], 'mm'),
+    20: new Packet(20, 'Angle', 2, [-32768, 32767], 'mm'),
     21: new Packet(21, 'ChargingState', 1, [0, 5]),
     22: new Packet(22, 'Voltage', 2, [0, 65535], 'mV'),
-    23: new Packet(23, 'Current', 2, [-32768, 32767], 'mA'), 
+    23: new Packet(23, 'Current', 2, [-32768, 32767], 'mA'),
     24: new Packet(24, 'BatteryTemperature', 1, [-128, 127], '°C'),
     25: new Packet(25, 'BatteryCharge', 2, [0, 65535], 'mAh'),
-    26: new Packet(26, 'BatteryCapacity', 2, [0, 65535], 'mAh'), 
-    27: new Packet(27, 'WallSignal', 2, [0, 4095]), 
-    28: new Packet(28, 'CliffLeftSignal', 2, [0, 4095]), 
-    29: new Packet(29, 'CliffFrontLeftSignal', 2, [0, 4095]), 
-    30: new Packet(30, 'CliffFrontRightSignal', 2, [0, 4095]), 
+    26: new Packet(26, 'BatteryCapacity', 2, [0, 65535], 'mAh'),
+    27: new Packet(27, 'WallSignal', 2, [0, 4095]),
+    28: new Packet(28, 'CliffLeftSignal', 2, [0, 4095]),
+    29: new Packet(29, 'CliffFrontLeftSignal', 2, [0, 4095]),
+    30: new Packet(30, 'CliffFrontRightSignal', 2, [0, 4095]),
     31: new Packet(31, 'CliffRightSignal', 2, [0, 4095]),
     32: new Packet(32, 'UserDigitalInputs', 1, [0, 31]),
     33: new Packet(33, 'UserAnalogInputs', 2, [0, 1023]),
@@ -415,13 +423,9 @@ Robot.sensorPackets = {
     38: new Packet(38, 'NumberOfStreamPackets', 1, [0, 42]),
     39: new Packet(39, 'Velocity', 2, [-500, 500], 'mm/s'),
     40: new Packet(40, 'Radius', 2, [-32768, 32767], 'mm'),
-    41: new Packet(41, 'RightVelocity', 2, [-500, 500], 'mm/s'), 
+    41: new Packet(41, 'RightVelocity', 2, [-500, 500], 'mm/s'),
     42: new Packet(42, 'LeftVelocity', 2, [-500, 500], 'mm/s')
 };
 
 
 module.exports = Robot;
-
-
-
-

@@ -23,10 +23,10 @@ class Packet {
     getDataUnit() {
         return this._dataUnit;
     }
-    parse(...bytes) {
+    parse(bytes) {
         var data = 0;
         bytes.forEach((byte, index, array) => {
-            data |= (byte << array.length - index - 1);
+            data |= (byte << (8*(array.length - index - 1)));
         });
         return data;
     }

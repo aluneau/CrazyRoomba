@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 
 
 //Initialize roomba connection
-roomba = new Robot("/dev/cu.usbserial-A700eXK6");
+roomba = new Robot("/dev/ttyUSB0");
 //Pass the io connection to the roomba
 roomba.connect(io);
 
@@ -23,5 +23,3 @@ http.listen(3000, function(){
 roomba.on("connected", function(){
     console.log("Roomba connecté");
 })
-
-

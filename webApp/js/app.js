@@ -84,8 +84,16 @@ app.controller('RoombaController', function($scope){
         //We put roomba in safemode
         this.roomba.safeMode();
         //And ask him to stream all sensors
-        this.roomba.streamAllSensors();
+        //this.roomba.streamAllSensors();
 
+        setInterval(function(){
+          console.log("ask distance");
+          this.roomba.streamSensors([19]);
+          setTimeout(function(){
+            this.roomba.pauseStreaming();
+            console.log("stop streaming");
+          }.bind(this), 50);
+        }.bind(this), 5000);
     }.bind(this));
 
 
