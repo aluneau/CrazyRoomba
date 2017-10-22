@@ -1,15 +1,12 @@
 const SerialPort = require('serialport');
 const EventEmitter = require('events');
-const CircularBuffer = require('cyclic-buffer').default;
 const Readline = SerialPort.parsers.Readline;
 const parser = new Readline("\n");
 const Packet = require("./sensors.js");
 const Data = require("./data.js");
-
 var fs = require('fs');
 
 
-//Return a random between min and max
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -20,183 +17,68 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
-        this.io = null;
-        this.emitInterval = null;
-        this._buffer = new CircularBuffer(1024);
+		this.portName = portName;
 
-        this.portName = portName;
+		this.port = new SerialPort(this.portName, {
+			baudRate: 57600,
+	    	dataBits: 8,
+	    	parity: 'none',
+	    	stopBits: 1,
+		});
 
-
-        //Configuration of serialPort
-        this.port = new SerialPort(this.portName, {
-           baudRate: 57600,
-           dataBits: 8,
-           parity: 'none',
-           stopBits: 1,
-           rtscts: false,
-           xon: false,
-           xoff: false,
-           xany: false,
-        });
-
-        //Assoc array wich contains fresh data from the robot. (syncrhonised in real time!)
-        this.datas = new Map();
+		this.port.on('open', function() {
+			console.log("port ouvert");
+			//port.write([128,132,136,8]);
+		
+            that.emit("connected");
 
 
-        this.port.on('open', function() {
-           console.log("Port opened");
-           that.emit("connected");
+            // that._sendCommand(new Buffer([128, 132]));
+			// that._sendCommand(new Buffer([136, 8]));
+			// setInterval(function(){
+			// 	that._sendCommand(new Buffer([149, 2, 10, 11])); //Clift right and left
+			// }, 50);
 
 
-        });
+		});
 
-        //When serial communication return an error i.e when the robot is not connected
         this.port.on("error", function(){
-            console.log("No robot connexion.... fakeRobot mode");
-
-            //Read the file fakeData.json contains a set of fakeData
+            console.log("Pas de connexion avec le robot.... passage en mode fakeRobot");
             var fakeData = JSON.parse(fs.readFileSync('./fakeData.json', 'utf8'));
-
-            //Send a fake data every 50ms
             setInterval(function(){
                 that.emit("data", fakeData[getRandomInt(0, fakeData.length)]);
             }, 50);
         })
 
-        //When a data is retrived correct and serialised
-        this.on('data', function(data){
-            if(data != undefined){
-              //We update the assoc array
-              if(data.packet.name == "Distance"){
-                console.log("distance", data.data);
-                if(data.data != 0){
-                  this.datas.set(data.packet.name, data.data);
-                }
-              }else{
-                this.datas.set(data.packet.name, data.data);
-              }
-            }
-        }.bind(this));
 
 
-        //On reception of brute data from the robot. (Hexa buffer)
-        this.port.on('data', this._serialDataParser.bind(this));
+		this.port.on('data', function(data){
+			//port.write(new Buffer([137,0x00,0xC8,0x80,0x00]));
+			//console.log(data);
+			//console.log(data[0]);
+			that._processSensorData(data);
+		});
 
-        //When data is checked and is ok
-        this.on("dataSerialised", function(data){
-            //lauch the parsing function
-            this._processSensorData(data);
-        }.bind(this));
-
-        this.on("errordata", data => console.log("error: " + data) );
-
-        //Init the socketIo emission of datas every 50ms (default value);
-        this.changeInterval(50);
-
-
-        //When the app is killed we take care of closing the serial port
-      //   process.on('SIGINT', function() {
-      //     console.log("Caught interrupt signal");
-      //     that.port.flush(function(){
-      //      that.port.close(function(){
-      //        process.exit();
-      //    });
-      //  });
-
-      //});
+		//Fermeture du port 
+		process.on('SIGINT', function() {
+		    console.log("Caught interrupt signal");
+		    that.port.flush(function(){
+		    	that.port.close(function(){
+					process.exit();
+		    	});
+		    });
+		    
+		});
 
 
-    }
+	}
 
 
-    //Main function to send data to the robot.
-    _sendCommand (buffer){
-      this.port.write(buffer);
-      this.port.flush();
-    }
+	_sendCommand (buffer){
+		this.port.write(buffer);
+	}
 
-    //Change the interval of emission to client
-    changeInterval(interval){
-        if(this.emitInterval != null){
-            clearInterval(this.emitInterval);
-        }
-
-        //Every "interval" time emit datas to the client
-        this.emitInterval = setInterval(function(){
-            let JSONArray = [];
-
-            for (let [key, value] of this.datas){
-
-                JSONArray.push({name: key, value: value});
-            }
-            if(this.io != null){
-                this.emit('datas', JSONArray);
-                this.io.emit('datas', JSONArray);
-            }
-        }.bind(this), interval);
-    }
-
-
-    //Init socket.io connection
-    connect(io){
-        this.io = io;
-        this.io.on('connection', function(socket){
-            //Client is connected
-            console.log('A client is connected!');
-            this.io.emit("connected");
-
-            //On command reception
-            socket.on("command", function(buffer){
-                //We pass the command to the robot
-                this._sendCommand(buffer);
-            }.bind(this));
-
-            socket.on("changeEmitionInterval", function(newInterval){
-                this.changeEmitInterval(newInterval);
-            }.bind(this));
-        }.bind(this));
-    }
-
-
-
-    //Get data from the robot and check if they are correct
-    _serialDataParser(data) {
-        this._buffer.put(data);
-        var oldBufferSize = 0;
-        while(this._buffer.size() > 0 && oldBufferSize !== this._buffer.size()) {
-            oldBufferSize = this._buffer.size();
-            let index = 0;
-            while(index < this._buffer.size() && 19 !== this._buffer[index]) {
-                ++index;
-            }
-            if(0 < index) {
-                let unparsableData = this._buffer.get(index);
-                //this.port.emit('data', unparsableData);
-            }
-
-            if(this._buffer.size() > 2 && this._buffer.size() >= this._buffer[1] + 3) {
-                let streamSize = this._buffer[1] + 3;
-                //debug('buffer size', this._buffer.remaining(), '; splice size:', streamSize);
-                let sensorData = this._buffer.get(streamSize);
-                let checksum = 0;
-                for(let i = 0; i < sensorData[1]+3; ++i) {
-                    checksum += sensorData[i];
-                }
-                checksum %= 256;
-                if(0 === checksum) {
-                    this.emit('dataSerialised', sensorData);
-                } else {
-                    this.emit('errordata', sensorData, checksum);
-                }
-            } else {
-                break;
-            }
-        }
-}
-
-    //Parse the corrects datas in to a json object
-    _processSensorData(dataStream) {
-        //console.log('valid stream ; size :',dataStream[1]);
+	_processSensorData(dataStream) {
         //console.log('Data Stream:', dataStream);
         dataStream = [...dataStream];
         var streamCode = dataStream.shift(); // 19
@@ -207,17 +89,12 @@ class Robot extends EventEmitter{
             if(Robot.sensorPackets[packetId]) {
                 let dataSize = Robot.sensorPackets[packetId].getDataSize();
                 let data = dataStream.splice(0, dataSize);
-                if(packetId == 19){
-
-                  console.log("distance: ", data);
-                }
                 let packet = new Data(Robot.sensorPackets[packetId], data);
                 this.emit('data', packet.toJSON());
                 //console.log('New packet:', packet.toString());
                 processed += dataSize + 1;
             } else {
-                console.log('Data Stream Error: packet id', packetId, 'does not exist');
-                this.emit('packetNotFound', packetId);
+                //console.log('Data Stream Error: packet id', packetId, 'does not exist');
                 break;
             }
         }
@@ -225,25 +102,25 @@ class Robot extends EventEmitter{
 
 
     /**
-     *
+     * 
      */
     passiveMode() {
         this._sendCommand([128]);
     }
     /**
-     *
+     * 
      */
     safeMode() {
-        this._sendCommand([128,131]);
+        this._sendCommand([128,131]);        
     }
     /**
-     *
+     * 
      */
     fullMode() {
         this._sendCommand([128,132]);
     }
     /**
-     *
+     * 
      */
     sing(notes) {
         var song = [];//new Array(notes.length * 2 + 3);
@@ -255,7 +132,7 @@ class Robot extends EventEmitter{
         this._sendCommand([141,0]);
     }
     /**
-     *
+     * 
      */
     drive(velocity, radius, direct = false) {
         if(direct) { this.driveDirect(velocity, radius); }
@@ -264,7 +141,7 @@ class Robot extends EventEmitter{
         this._sendCommand([137, (velocity >> 8) & 255, velocity & 255, (radius >> 8) & 255, radius & 255]);
     }
     /**
-     *
+     * 
      */
     driveDirect(left, right) {
         left = parseInt(left);
@@ -272,14 +149,14 @@ class Robot extends EventEmitter{
         this._sendCommand([145, (left >> 8) & 255, left & 255, (right >> 8) & 255, right & 255]);
     }
     /**
-     *
+     * 
      */
     stop() {
         this.driveDirect(0,0);
         this.startDemo('abort');
     }
     /**
-     *
+     * 
      */
     startDemo(number) {
         if('string' === typeof number) { number = Robot.demos[number] || Robot.demos['abort']; }
@@ -344,75 +221,29 @@ class Robot extends EventEmitter{
 
 }
 
-Robot.demos = {
-    'abort': 255,
-    'cover': 0,
-    'cover-and-dock': 1,
-    'spot-cover': 2,
-    'mouse': 3,
-    'drive-figure-eight': 4,
-    'wimp': 5,
-    'home': 6,
-    'tag': 7,
-    'pachelbel': 8,
-    'banjo': 9
-};
-
-Robot.leds = {
-    'advance': 8,
-    'play': 2
-};
-
-
-
-Robot.events = {
-    'wheel-drop': 1,
-    'front-wheel-drop': 2,
-    'left-wheel-drop': 3,
-    'right-wheel-drop': 4,
-    'bump': 5,
-    'left-bump': 6,
-    'right-bump': 7,
-    'virtual-wall': 8,
-    'wall': 9,
-    'cliff': 10,
-    'left-cliff': 11,
-    'front-left-cliff': 12,
-    'front-right-cliff': 13,
-    'right-cliff': 14,
-    'home-base': 15,
-    'advance-button': 16,
-    'play-button': 17,
-    'digital-output-0': 18,
-    'digital-output-1': 19,
-    'digital-output-2': 20,
-    'digital-output-3': 21,
-    'passive': 22,
-};
-
 Robot.sensorPackets = {
-    7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]),
-    8: new Packet(8, 'Wall', 1, [0, 1]),
-    9: new Packet(9, 'CliffLeft', 1, [0, 1]),
-    10: new Packet(10, 'CliffFrontLeft', 1, [0, 1]),
-    11: new Packet(11, 'CliffFrontRight', 1, [0, 1]),
-    12: new Packet(12, 'CliffRight', 1, [0, 1]),
-    13: new Packet(13, 'VirtualWall', 1, [0, 1]),
-    14: new Packet(14, 'Overcurrents', 1, [0, 31]),
-    17: new Packet(17, 'IRByte', 1, [0, 255]),
+    7: new Packet(7, 'BumpsAndWheelDrops', 1, [0, 31]), 
+    8: new Packet(8, 'Wall', 1, [0, 1]), 
+    9: new Packet(9, 'CliffLeft', 1, [0, 1]), 
+    10: new Packet(10, 'CliffFrontLeft', 1, [0, 1]), 
+    11: new Packet(11, 'CliffFrontRight', 1, [0, 1]), 
+    12: new Packet(12, 'CliffRight', 1, [0, 1]), 
+    13: new Packet(13, 'VirtualWall', 1, [0, 1]), 
+    14: new Packet(14, 'Overcurrents', 1, [0, 31]), 
+    17: new Packet(17, 'IRByte', 1, [0, 255]), 
     18: new Packet(18, 'Buttons', 1, [0, 15]),
-    19: new Packet(19, 'Distance', 2, [-32768, 32767], 'mm'),
-    20: new Packet(20, 'Angle', 2, [-32768, 32767], 'mm'),
+    19: new Packet(19, 'Distance', 2, [-32768, 32767], 'mm'), 
+    20: new Packet(20, 'Angle', 2, [-32768, 32767], 'mm'), 
     21: new Packet(21, 'ChargingState', 1, [0, 5]),
     22: new Packet(22, 'Voltage', 2, [0, 65535], 'mV'),
-    23: new Packet(23, 'Current', 2, [-32768, 32767], 'mA'),
+    23: new Packet(23, 'Current', 2, [-32768, 32767], 'mA'), 
     24: new Packet(24, 'BatteryTemperature', 1, [-128, 127], '°C'),
     25: new Packet(25, 'BatteryCharge', 2, [0, 65535], 'mAh'),
-    26: new Packet(26, 'BatteryCapacity', 2, [0, 65535], 'mAh'),
-    27: new Packet(27, 'WallSignal', 2, [0, 4095]),
-    28: new Packet(28, 'CliffLeftSignal', 2, [0, 4095]),
-    29: new Packet(29, 'CliffFrontLeftSignal', 2, [0, 4095]),
-    30: new Packet(30, 'CliffFrontRightSignal', 2, [0, 4095]),
+    26: new Packet(26, 'BatteryCapacity', 2, [0, 65535], 'mAh'), 
+    27: new Packet(27, 'WallSignal', 2, [0, 4095]), 
+    28: new Packet(28, 'CliffLeftSignal', 2, [0, 4095]), 
+    29: new Packet(29, 'CliffFrontLeftSignal', 2, [0, 4095]), 
+    30: new Packet(30, 'CliffFrontRightSignal', 2, [0, 4095]), 
     31: new Packet(31, 'CliffRightSignal', 2, [0, 4095]),
     32: new Packet(32, 'UserDigitalInputs', 1, [0, 31]),
     33: new Packet(33, 'UserAnalogInputs', 2, [0, 1023]),
@@ -423,9 +254,13 @@ Robot.sensorPackets = {
     38: new Packet(38, 'NumberOfStreamPackets', 1, [0, 42]),
     39: new Packet(39, 'Velocity', 2, [-500, 500], 'mm/s'),
     40: new Packet(40, 'Radius', 2, [-32768, 32767], 'mm'),
-    41: new Packet(41, 'RightVelocity', 2, [-500, 500], 'mm/s'),
+    41: new Packet(41, 'RightVelocity', 2, [-500, 500], 'mm/s'), 
     42: new Packet(42, 'LeftVelocity', 2, [-500, 500], 'mm/s')
 };
 
 
 module.exports = Robot;
+
+
+
+
