@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+roomba-app/node_modules
+roomba-app/package-lock.json
+package-lock.json
+roomba-app/dist
+roomba-app/src/*.js

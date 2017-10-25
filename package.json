@@ -1,17 +1,23 @@
 {
-  "name": "crazyroumba",
-  "version": "1.0.0",
-  "description": "[git add .] [git pull] [git commit -m \"on se fait une yellow?\"] [git push]",
-  "main": "Robot.js",
+  "name": "crazy-roomba",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
   "dependencies": {
     "cyclic-buffer": "^1.0.3",
-    "express": "^4.16.1",
-    "socket.io": "^2.0.3",
-    "serialport": "^5.0.0"
+    "express": "^4.16.2",
+    "express-generator": "^4.15.5",
+    "serialport": "^6.0.3",
+    "socket.io": "^2.0.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "concurrently": "^3.5.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "cd roomba-app && ng build",
+    "build:watch": "cd roomba-app && ng build --watch",
+    "serve": "node server.js",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\""
   },
   "repository": {
     "type": "git",

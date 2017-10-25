@@ -4,7 +4,7 @@ class Robot extends EventEmitter{
         this.dataBinding = null;
 
         //Initialise socket.io
-		this.socket = io();
+		this.socket = io.connect();
 
         //When receive datas from server
         this.socket.on('datas', function(datas){
