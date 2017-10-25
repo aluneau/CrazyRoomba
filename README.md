@@ -4,18 +4,18 @@
 `git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && ./install.sh`
 Then you can use: `npm start` to start server and watch the code.
 If you just want to run the server you can run: 
-`npm run serve`
+`npm run serve` <br/>
 and if you just want to watch and build you can run:
-`npm run build:watch`
+`npm run build:watch` <br/>
 if you juste want to build then run: 
 `npm run build` 
 
 ## How folders are organize?
-`/` contains everything about the server.
-`roomba-app` contains client side
-`roomba-app/src`contains the angular 4 app
-`roomba-app/jsLibraries`contains js externals libraries including our Robot client library.
-`roomba-app/img` you can use this folder to put images for the client side.
+`/` contains everything about the server. <br/>
+`roomba-app` contains client side <br/>
+`roomba-app/src`contains the angular 4 app <br/>
+`roomba-app/jsLibraries`contains js externals libraries including our Robot client library. <br/>
+`roomba-app/img` you can use this folder to put images for the client side. <br/>
 
 ## What the principle of the library
 
