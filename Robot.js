@@ -68,7 +68,7 @@ class Robot extends EventEmitter{
             if(data != undefined){
               //We update the assoc array
               if(data.packet.name == "Distance"){
-                console.log("distance", data.data);
+                //console.log("distance", data.data);
                 if(data.data != 0){
                   this.datas.set(data.packet.name, data.data);
                 }
@@ -88,7 +88,7 @@ class Robot extends EventEmitter{
             this._processSensorData(data);
         }.bind(this));
 
-        this.on("errordata", data => console.log("error: " + data) );
+        //this.on("errordata", data => console.log("error: " + data) );
 
         //Init the socketIo emission of datas every 50ms (default value);
         this.changeInterval(50);
@@ -207,10 +207,10 @@ class Robot extends EventEmitter{
             if(Robot.sensorPackets[packetId]) {
                 let dataSize = Robot.sensorPackets[packetId].getDataSize();
                 let data = dataStream.splice(0, dataSize);
-                if(packetId == 19){
+                // if(packetId == 19){
 
-                  console.log("distance: ", data);
-                }
+                //   console.log("distance: ", data);
+                // }
                 let packet = new Data(Robot.sensorPackets[packetId], data);
                 this.emit('data', packet.toJSON());
                 //console.log('New packet:', packet.toString());
