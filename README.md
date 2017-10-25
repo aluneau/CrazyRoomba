@@ -1,41 +1,21 @@
 # CrazyRoomba
 
 ## Basic installation:
-`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm install`
+`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && ./install.sh`
+Then you can use: `npm start` to start server and watch the code.
+If you just want to run the server you can run: 
+`npm run serve`
+and if you just want to watch and build you can run:
+`npm run build:watch`
+if you juste want to build then run: 
+`npm run build` 
 
-## Base server code
-```js
-var Robot = require("./Robot.js");
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
-
-//Initialize roomba connection
-roomba = new Robot("!YOUR COMMUNCIATION PORT!");
-//Pass the io connection to the roomba
-roomba.connect(io);
-
-//Use webApp as the client application directory
-app.use(express.static(__dirname  + '/webApp'));
-
-//Starting express and socket.io on the port 3000
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
-
-
-//Roomba connection event
-roomba.on("connected", function(){
-    console.log("Roomba connecté");
-})
-
-
-
-```
-This simple code starts a robot instance and connects it to socket.io
-
+## How folders are organize?
+`/` contains everything about the server.
+`roomba-app` contains client side
+`roomba-app/src`contains the angular 4 app
+`roomba-app/jsLibraries`contains js externals libraries including our Robot client library.
+`roomba-app/img` you can use this folder to put images for the client side.
 
 ## What the principle of the library
 
