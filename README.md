@@ -1,13 +1,13 @@
 # CrazyRoomba
 
 ## Basic installation:
-`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && ./install.sh`
-Then you can use: `npm start` to start server and watch the code.
+`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && ./install.sh` <br/>
+Then you can use: `npm start` to start server and watch the code.<br/>
 If you just want to run the server you can run: 
 `npm run serve` <br/>
-and if you just want to watch and build you can run:
+If you just want to watch and build you can run:
 `npm run build:watch` <br/>
-if you juste want to build then run: 
+If you juste want to build then run: 
 `npm run build` 
 
 ## How folders are organize?
