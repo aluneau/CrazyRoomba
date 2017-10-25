@@ -14,6 +14,7 @@
     "concurrently": "^3.5.0"
   },
   "scripts": {
+    "setup": "npm install && cd roomba-app && npm install",
     "build": "cd roomba-app && ng build",
     "build:watch": "cd roomba-app && ng build --watch",
     "serve": "node server.js",

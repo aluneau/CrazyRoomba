@@ -1,7 +1,7 @@
 # CrazyRoomba
 
 ## Basic installation:
-`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && ./install.sh` <br/>
+`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm run setup` <br/>
 Then you can use: `npm start` to start server and watch the code.<br/>
 If you just want to run the server you can run: 
 `npm run serve` <br/>
