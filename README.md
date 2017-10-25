@@ -260,6 +260,3 @@ When the robot is not correctly connected the server will run in "FakeRobot mode
 
 ## What's in the webApp folder?
 There is a simple angularjs 1.6 app which allow you to show every sensors in HTML table and control it with your keyboard. (using zqzd)
-
-
-
