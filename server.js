@@ -2,12 +2,16 @@ var Robot = require("./Robot.js");
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+//var io = require('socket.io')(http);
+var mqtt = require('mqtt');
 
 //Initialize roomba connection
-roomba = new Robot("/dev/ttyUSB0");
+roomba = new Robot("/dev/cu.usbserial-A700eXK6");
 //Pass the io connection to the roomba
-roomba.connect(io);
+
+var client = mqtt.connect('mqtt://localhost');
+
+roomba.connect(client);
 
 
 

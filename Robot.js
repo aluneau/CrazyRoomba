@@ -20,7 +20,7 @@ class Robot extends EventEmitter{
 	constructor(portName){
 		super();
 		var that = this;
-        this.io = null;
+        this.client = null;
         this.emitInterval = null;
         this._buffer = new CircularBuffer(1024);
 
@@ -129,32 +129,37 @@ class Robot extends EventEmitter{
 
                 JSONArray.push({name: key, value: value});
             }
-            if(this.io != null){
+            if(this.client != null){
                 this.emit('datas', JSONArray);
-                this.io.emit('datas', JSONArray);
+                this.client.publish('/roomba/datas', JSON.stringify(JSONArray));
             }
         }.bind(this), interval);
     }
 
 
-    //Init socket.io connection
-    connect(io){
-        this.io = io;
-        this.io.on('connection', function(socket){
+    //Init mqtt connection
+    connect(client){
+        this.client = client;
+        this.client.on('connect', function(socket){
             //Client is connected
-            console.log('A client is connected!');
-            this.io.emit("connected");
-
-            //On command reception
-            socket.on("command", function(buffer){
-                //We pass the command to the robot
-                this._sendCommand(buffer);
-            }.bind(this));
-
-            socket.on("changeEmitionInterval", function(newInterval){
-                this.changeEmitInterval(newInterval);
-            }.bind(this));
+            console.log('Mqtt ok!');
+            this.client.publish("/roomba/connected", "");
+            this.client.subscribe("/roomba/sendCommand");
+            this.client.subscribe("/roomba/changeEmitionInterval");
         }.bind(this));
+
+
+        this.client.on("message", function(topic, message){
+            if(topic == "/roomba/sendCommand"){
+                //We pass the command to the robot
+                this._sendCommand(JSON.parse(message));
+            }
+
+            if(topic == "/roomba/changeEmitionInterval"){
+                this.changeEmitInterval(JSON.parse(message));                    
+            }
+        }.bind(this));
+
     }
 
 

@@ -4,27 +4,35 @@ class Robot extends EventEmitter{
         this.dataBinding = null;
 
         //Initialise socket.io
-		this.socket = io.connect();
+        console.log('Init mqtt connection');
+		this.client = mqtt.connect('ws://127.0.0.1:8083/mqtt');
 
-        //When receive datas from server
-        this.socket.on('datas', function(datas){
-            //redirect datas to the object
-            this.emit("datas", datas);
-
-            if(this.dataBinding != null){
-                this.dataBinding.emit("datas", datas);
-            }
-        }.bind(this));
-
-        this.socket.on("connected", function(){
+        this.client.on("connect", function(connack){
+            this.client.subscribe("/roomba/datas")
             this.emit("connected");
         }.bind(this));
 
+        this.client.on("reconnect", function(){
+            console.log("reconnect");
+        });
+        
+        //When receive datas from server
+        this.client.on('message', function(topic, message){
+            //redirect datas to the object
+            if(topic == "/roomba/datas"){
+                this.emit("datas", JSON.parse(message));   
+                if(this.dataBinding != null){
+                    this.dataBinding.emit("datas", JSON.parse(message));
+                }             
+            }
+
+
+        }.bind(this));
 
 	}
 
     changeInterval(newInterval){
-        this.socket.emit("changeEmitionInterval", newInterval);
+        this.client.publish("/roomba/changeEmitionInterval", JSON.stringify(newInterval));
     }
 
     bind(dataBinding){
@@ -34,7 +42,7 @@ class Robot extends EventEmitter{
     }
 
 	_sendCommand (buffer){
-		this.socket.emit("command", buffer);
+        this.client.publish("/roomba/sendCommand", JSON.stringify(buffer));
 	}
 
     /**

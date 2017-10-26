@@ -66,7 +66,7 @@ export class AppComponent  {
         this.robot.safeMode();
         //And ask him to stream all sensors
         this.robot.streamAllSensors();
-
+        //this.robot.changeInterval(50);
     }.bind(this));
 
     //On data update

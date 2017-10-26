@@ -7,6 +7,7 @@
     "cyclic-buffer": "^1.0.3",
     "express": "^4.16.2",
     "express-generator": "^4.15.5",
+    "mqtt": "^2.13.1",
     "serialport": "^6.0.3",
     "socket.io": "^2.0.4"
   },
