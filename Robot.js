@@ -146,6 +146,8 @@ class Robot extends EventEmitter{
             this.client.publish("/roomba/connected", "");
             this.client.subscribe("/roomba/sendCommand");
             this.client.subscribe("/roomba/changeEmitionInterval");
+            this.client.subscribe("/roomba/turn");
+            this.client.subscribe("/roomba/getDistance");
         }.bind(this));
 
 
@@ -155,8 +157,16 @@ class Robot extends EventEmitter{
                 this._sendCommand(JSON.parse(message));
             }
 
+            if(topic == "/roomba/turn"){
+                this.turnAngle(JSON.parse(message));
+            }
+
             if(topic == "/roomba/changeEmitionInterval"){
                 this.changeEmitInterval(JSON.parse(message));                    
+            }
+
+            if(topic == "/roomba/getDistance"){
+                this.getDistance();
             }
         }.bind(this));
 
@@ -320,12 +330,43 @@ class Robot extends EventEmitter{
         var ids = [7,8,9,10,11,12,13,14,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42];
         this.requestSensors(ids);
     }*/
+
+    getDistance(){
+        //console.log("getDistance");
+        this.pauseStreaming();
+        this.streamSensors([19]);
+
+        setTimeout(function(){
+            //console.log(this.datas.get("Distance"));
+            if(this.datas.get("Distance")!=undefined){
+                this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");
+            }
+            this.streamAllSensors();
+        }.bind(this), 50);
+    }
+
+    turnAngle(angle){
+        console.log(angle);
+        this.fullMode();
+        setTimeout(function(){
+            this._sendCommand([137,0,127,0,1,157,0,angle, 137, 0, 0, 0, 0]);            
+        }.bind(this), 50)
+    }
+
     streamSensors(ids) {
         this._sendCommand([148, ids.length, ...ids]);
     }
     streamAllSensors() {
         var ids = Object.keys(Robot.sensorPackets);
-        this.streamSensors(ids);
+        var _ids = [];
+
+        for (let i = 0; i < ids.length; i++){
+            if(ids[i] != 19 && ids[i] != 20){
+                _ids.push(ids[i]);
+            }
+        }
+
+        this.streamSensors(_ids);
     }
     pauseStreaming() {
         this._sendCommand([150, 0]);

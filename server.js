@@ -35,4 +35,5 @@ http.listen(3000, function(){
 //Roomba connection event
 roomba.on("connected", function(){
     console.log("Roomba connecté");
+
 })

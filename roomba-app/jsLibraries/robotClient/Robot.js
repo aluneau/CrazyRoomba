@@ -131,7 +131,22 @@ class Robot extends EventEmitter{
     }
     streamAllSensors() {
         var ids = Object.keys(Robot.sensorPackets);
-        this.streamSensors(ids);
+        var _ids = [];
+
+        for (let i = 0; i < ids.length; i++){
+            if(ids[i] != 19 && ids[i] != 20){
+                _ids.push(ids[i]);
+            }
+        }
+
+        this.streamSensors(_ids);
+    }
+    getDistance(){
+        this.pauseStreaming();
+        this.streamSensors([19]);
+        setTimeout(function(){
+            this.streamAllSensors();
+        }.bind(this), 50);
     }
     pauseStreaming() {
         this._sendCommand([150, 0]);

@@ -12,7 +12,7 @@ export class AppComponent  {
   robot:any;
   powerMotorRight: number;
   powerMotorLeft: number;
-  maxSpeed = 400;
+  maxSpeed = 200;
 
   @HostListener('document:keypress', ['$event'])
   handleKeyPressed(event: KeyboardEvent) {
@@ -67,7 +67,19 @@ export class AppComponent  {
         //And ask him to stream all sensors
         this.robot.streamAllSensors();
         //this.robot.changeInterval(50);
-    }.bind(this));
+
+
+        // setTimeout(function(){
+        //   this.robot.fullMode();
+        //   this.robot._sendCommand([137,0,127,0,1,157,0,87, 137, 0, 0, 0, 0]);
+        //   console.log("test");
+        // }.bind(this), 1000);
+
+        // setInterval(function(){
+        //   this.robot.getDistance();
+        //   console.log("distance refresh");
+        // }.bind(this), 10000);
+      }.bind(this));
 
     //On data update
     this.robot.on("datas", function(datas:any){
