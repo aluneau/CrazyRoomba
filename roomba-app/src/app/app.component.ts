@@ -67,6 +67,8 @@ export class AppComponent  {
         //And ask him to stream all sensors
         this.robot.streamAllSensors();
         //this.robot.changeInterval(50);
+        this.robot.fullMode();
+        this.robot.driveDirect(200,200);
 
 
         // setTimeout(function(){

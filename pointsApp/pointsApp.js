@@ -27,8 +27,8 @@ client.on("message", function(topic, message){
         }
 
         if(BumpsAndWheelDrops != undefined && BumpsAndWheelDrops>0 && flag == 0){
+            client.publish("/roomba/getDistance");            
             client.publish("/roomba/turn", "45");
-            client.publish("/roomba/getDistance");
             flag = 1;
         }
 
