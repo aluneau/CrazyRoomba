@@ -1,6 +1,28 @@
-<table id="sensorsTable" class="table table-striped">
-    <tr *ngFor="let data of datas">
-        <td>{{data.name}}</td>
-        <td>{{data.value}}</td> 
-    </tr>
-</table>
+<mat-toolbar color="primary">
+    <span><img src="img/roombaLogo_white.png" height="32px" class="logo"/>CrazyRoomba</span>
+</mat-toolbar>
+
+<div>
+    <div class="example-header">
+        <mat-form-field floatPlaceholder="never">
+        <input autocomplete="off" [(ngModel)]="searchText" matInput placeholder="Filter by name">
+        </mat-form-field>
+    </div>
+
+    <div class="example-container mat-elevation-z8">            
+    <table id="sensorsTable" class="table">
+        <thead>
+            <tr>
+                <th>SensorName</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of datas | search : searchText">
+            <td>{{data.name}}</td>
+            <td>{{data.value}}</td> 
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>

@@ -21,6 +21,10 @@ app.use('/libraries', express.static(__dirname + '/roomba-app/jsLibraries'));
 app.use('/img', express.static(__dirname + '/roomba-app/img'));
 //Use webApp as the client application directory
 app.use("/", express.static(__dirname  + '/roomba-app/dist'));
+//Use node_modules
+app.use("/style.css", express.static(__dirname + "/roomba-app/style.css"));
+
+app.use("/node_modules", express.static(__dirname + "/roomba-app/node_modules"));
 //Always redirect to "/" in order to use angular routes
 app.use("*", express.static(__dirname  + '/roomba-app/dist'));
 

@@ -1,1 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
+.fill{
+    flex: 1 1 auto;
+}
+.logo{
+    margin-right: 15px;
+}
+
+
+/* Structure */
+.example-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    margin: 8px 24px 12px;
+  }
+  
+  .example-header {
+    min-height: 64px;
+    display: flex;
+    align-items: baseline;
+    padding: 8px 24px 0;
+    font-size: 20px;
+    justify-content: space-between;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    flex-grow: 1;
+  }
+  
+  .mat-table {
+    overflow: auto;
+    max-height: 500px;
+  }
