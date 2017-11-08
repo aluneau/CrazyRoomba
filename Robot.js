@@ -69,6 +69,10 @@ class Robot extends EventEmitter{
               //We update the assoc array
               if(data.packet.name == "Distance"){
                 //console.log("distance", data.data);
+                if(data.data > 60000){
+                    data.data = 0;
+                    this.datas.set(data.packet.name, data.data);
+                }
                 if(data.data != 0){
                   this.datas.set(data.packet.name, data.data);
                 }
@@ -349,9 +353,10 @@ class Robot extends EventEmitter{
             //console.log(this.datas.get("Distance"));
             if(this.datas.get("Distance")!=undefined){
                 this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");
+                this.datas.set("Distance", 0);
             }
             this.streamAllSensors();
-        }.bind(this), 50);
+        }.bind(this), 100);
     }
 
     turnAngle(angle){

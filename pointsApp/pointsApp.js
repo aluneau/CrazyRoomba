@@ -4,15 +4,39 @@ var client = mqtt.connect("mqtt://localhost");
 
 var flag = 0;
 
+function convertToRadian(degrees){
+    var pi = Math.PI;
+    return degrees * (pi/180);
+}
+
+
+class Point {
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+    }
+}
+
+var pointN_1 = new Point();
+
+var angle = 0;
+var distance = 0;
 
 setInterval(function(){
     flag = 0;
-}, 3000);
+}, 4000);
+
+
 
 client.on("connect", function(){
     console.log("MQTT Ok");
     client.subscribe("/roomba/datas");
     client.subscribe("/roomba/distance");
+
+    setInterval(function(){
+        client.publish("/roomba/getDistance");
+
+    }, 5000);
     
 });
 
@@ -26,15 +50,33 @@ client.on("message", function(topic, message){
             }
         }
 
-        if(BumpsAndWheelDrops != undefined && BumpsAndWheelDrops>0 && flag == 0){
-            client.publish("/roomba/getDistance");            
+        if(BumpsAndWheelDrops != undefined &&  BumpsAndWheelDrops>0 && flag == 0){
+            console.log("BUMPPP!!");
+            //client.publish("/roomba/getDistance");            
             client.publish("/roomba/turn", "45");
+            
+            angle+=45;
+
             flag = 1;
+        }
+        else if(BumpsAndWheelDrops != null && BumpsAndWheelDrops == 0 && flag == 1){
+            flag = 0;
         }
 
         //console.log("BumpsAndWheelDrops", BumpsAndWheelDrops);
     }
     if(topic == "/roomba/distance"){
-        console.log(JSON.parse(message));
+        let retrivedDistance = JSON.parse(message);
+        
+        var point = new Point();
+        point.x = pointN_1.x + retrivedDistance;
+        point.y = pointN_1.y + retrivedDistance;
+
+        angle%=360;
+        console.log("Distance: ", retrivedDistance);
+        console.log(point.x, point.y);
+        pointN_1 = point;
+        
+        //console.log(JSON.parse(message));
     }
 });
