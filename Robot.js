@@ -345,22 +345,27 @@ class Robot extends EventEmitter{
     }*/
 
     getDistance(){
+        console.log("flag 2")
         //console.log("getDistance");
         this.pauseStreaming();
         this.streamSensors([19]);
 
         setTimeout(function(){
             //console.log(this.datas.get("Distance"));
-            if(this.datas.get("Distance")!=undefined){
-                this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");
-                this.datas.set("Distance", 0);
-            }
+                setTimeout(function(){
+                    if(this.datas.get("Distance")!=undefined){          
+                        this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");    
+                        this.datas.set("Distance", 0);
+                        console.log("flag4");
+                    }         
+                }.bind(this), 30);
+            console.log("flag3");
             this.streamAllSensors();
-        }.bind(this), 100);
+        }.bind(this), 15);
     }
 
     turnAngle(angle){
-        console.log(angle);
+        console.log("flag 6");
         this.fullMode();
         setTimeout(function(){
             this._sendCommand([137,0,127,0,1,157,0,angle, 137, 0, 0, 0, 0]);            

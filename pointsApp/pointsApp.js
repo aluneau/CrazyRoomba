@@ -33,10 +33,10 @@ client.on("connect", function(){
     client.subscribe("/roomba/datas");
     client.subscribe("/roomba/distance");
 
-    setInterval(function(){
-        client.publish("/roomba/getDistance");
+    // setInterval(function(){
+    //     client.publish("/roomba/getDistance");
 
-    }, 5000);
+    // }, 5000);
     
 });
 
@@ -51,21 +51,22 @@ client.on("message", function(topic, message){
         }
 
         if(BumpsAndWheelDrops != undefined &&  BumpsAndWheelDrops>0 && flag == 0){
-            console.log("BUMPPP!!");
-            //client.publish("/roomba/getDistance");            
-            client.publish("/roomba/turn", "45");
+            console.log("Flag 1");
+            client.publish("/roomba/getDistance");            
             
             angle+=45;
 
             flag = 1;
         }
-        else if(BumpsAndWheelDrops != null && BumpsAndWheelDrops == 0 && flag == 1){
-            flag = 0;
-        }
+        // else if(BumpsAndWheelDrops != null && BumpsAndWheelDrops == 0 && flag == 1){
+        //     flag = 0;
+        // }
 
         //console.log("BumpsAndWheelDrops", BumpsAndWheelDrops);
     }
     if(topic == "/roomba/distance"){
+        client.publish("/roomba/turn", "80");    
+        console.log("flag5");    
         let retrivedDistance = JSON.parse(message);
         
         var point = new Point();
