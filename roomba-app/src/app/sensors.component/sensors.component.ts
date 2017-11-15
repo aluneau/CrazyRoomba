@@ -4,10 +4,10 @@ import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'roomba-app',
-  templateUrl: "./app.component.html"
+  templateUrl: "./sensors.component.html"
 }) 
 
-export class AppComponent  { 
+export class SensorsComponent  { 
   datas: Array<Object> = [];
   robot:any;
   powerMotorRight: number;

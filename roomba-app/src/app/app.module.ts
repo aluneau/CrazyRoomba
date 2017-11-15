@@ -8,9 +8,10 @@ import { FilterPipe} from "./pipe.filter";
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
 import {PageNotFoundComponent} from './page-not-found.component/page-not-found.component'
+import {SensorsComponent} from "./sensors.component/sensors.component"
 
 const appRoutes: Routes = [
-  { path: 'sensors', component: AppComponent },
+  { path: 'sensors', component: SensorsComponent },
   { path: '',
     redirectTo: '/sensors',
     pathMatch: 'full'
@@ -22,6 +23,8 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
+    SensorsComponent,
+    PageNotFoundComponent,
     FilterPipe
   ],
   imports: [
@@ -33,6 +36,9 @@ const appRoutes: Routes = [
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    RouterModule.forRoot(
+      appRoutes
+      )
   ],
   providers: [],
   bootstrap: [AppComponent]
