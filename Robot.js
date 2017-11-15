@@ -71,11 +71,13 @@ class Robot extends EventEmitter{
                 //console.log("distance", data.data);
                 if(data.data > 60000){
                     data.data = 0;
-                    this.datas.set(data.packet.name, data.data);
+                    //this.datas.set(data.packet.name, data.data);
                 }
-                if(data.data != 0){
-                  this.datas.set(data.packet.name, data.data);
+                if(this.datas.get("Distance") == undefined){
+                    this.datas.set("Distance", 0);
                 }
+                this.datas.set(data.packet.name, this.datas.get("Distance") + data.data);
+                
               }else{
                 this.datas.set(data.packet.name, data.data);
               }
@@ -355,7 +357,7 @@ class Robot extends EventEmitter{
                 setTimeout(function(){
                     if(this.datas.get("Distance")!=undefined){          
                         this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");    
-                        this.datas.set("Distance", 0);
+                        //this.datas.set("Distance", 0);
                         console.log("flag4");
                     }         
                 }.bind(this), 30);

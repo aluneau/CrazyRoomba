@@ -1,8 +1,10 @@
 var mqtt = require("mqtt");
 
-var client = mqtt.connect("mqtt://localhost");
+var client = mqtt.connect("mqtt://127.0.0.1");
 
 var flag = 0;
+
+var pDistance = 0;
 
 function convertToRadian(degrees){
     var pi = Math.PI;
@@ -54,7 +56,7 @@ client.on("message", function(topic, message){
             console.log("Flag 1");
             client.publish("/roomba/getDistance");            
             
-            angle+=45;
+            angle+=80;
 
             flag = 1;
         }
@@ -68,14 +70,19 @@ client.on("message", function(topic, message){
         client.publish("/roomba/turn", "80");    
         console.log("flag5");    
         let retrivedDistance = JSON.parse(message);
-        
+
+        let distance = retrivedDistance - pDistance;
         var point = new Point();
-        point.x = pointN_1.x + retrivedDistance;
-        point.y = pointN_1.y + retrivedDistance;
+
+        point.x = pointN_1.x + distance*Math.cos(convertToRadian(angle)) ;
+        point.y = pointN_1.y + distance*Math.sin(convertToRadian(angle));
+
 
         angle%=360;
-        console.log("Distance: ", retrivedDistance);
-        console.log(point.x, point.y);
+        console.log("Distance: ", retrivedDistance - pDistance);
+        pDistance = retrivedDistance;
+        console.log("point: " , point.x, point.y);
+
         pointN_1 = point;
         
         //console.log(JSON.parse(message));

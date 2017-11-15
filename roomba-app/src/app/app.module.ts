@@ -6,6 +6,18 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe} from "./pipe.filter";
 import { AppComponent } from './app.component';
+import { RouterModule, Routes } from '@angular/router';
+import {PageNotFoundComponent} from './page-not-found.component/page-not-found.component'
+
+const appRoutes: Routes = [
+  { path: 'sensors', component: AppComponent },
+  { path: '',
+    redirectTo: '/sensors',
+    pathMatch: 'full'
+  },
+  { path: '**', component: PageNotFoundComponent }
+];
+
 
 @NgModule({
   declarations: [
