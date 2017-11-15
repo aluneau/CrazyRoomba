@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
 import {PageNotFoundComponent} from './page-not-found.component/page-not-found.component'
 import {SensorsComponent} from "./sensors.component/sensors.component"
+import { MapComponent } from './map.component/map.component';
 
 const appRoutes: Routes = [
   { path: 'sensors', component: SensorsComponent },
@@ -16,6 +17,7 @@ const appRoutes: Routes = [
     redirectTo: '/sensors',
     pathMatch: 'full'
   },
+  { path: 'map', component: MapComponent},
   { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -25,6 +27,7 @@ const appRoutes: Routes = [
     AppComponent,
     SensorsComponent,
     PageNotFoundComponent,
+    MapComponent,
     FilterPipe
   ],
   imports: [

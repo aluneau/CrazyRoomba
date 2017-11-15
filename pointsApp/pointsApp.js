@@ -56,7 +56,7 @@ client.on("message", function(topic, message){
             console.log("Flag 1");
             client.publish("/roomba/getDistance");            
             
-            angle+=80;
+            angle+=90;
 
             flag = 1;
         }
@@ -67,7 +67,7 @@ client.on("message", function(topic, message){
         //console.log("BumpsAndWheelDrops", BumpsAndWheelDrops);
     }
     if(topic == "/roomba/distance"){
-        client.publish("/roomba/turn", "80");    
+        client.publish("/roomba/turn", "90");    
         console.log("flag5");    
         let retrivedDistance = JSON.parse(message);
 
@@ -77,11 +77,14 @@ client.on("message", function(topic, message){
         point.x = pointN_1.x + distance*Math.cos(convertToRadian(angle)) ;
         point.y = pointN_1.y + distance*Math.sin(convertToRadian(angle));
 
+        let toSend = "{\"x\":" + point.x/10 + ", \"y\":" + point.y/10 + "}";
+
+        console.log(toSend);
+        client.publish("/roomba/points", toSend);
 
         angle%=360;
         console.log("Distance: ", retrivedDistance - pDistance);
         pDistance = retrivedDistance;
-        console.log("point: " , point.x, point.y);
 
         pointN_1 = point;
         
