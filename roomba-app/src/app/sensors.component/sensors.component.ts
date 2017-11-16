@@ -65,7 +65,7 @@ export class SensorsComponent  {
         //We put roomba in safemode
         this.robot.safeMode();
         //And ask him to stream all sensors
-        this.robot.streamAllSensors();
+        this.robot.streamSensors([7]);
         //this.robot.changeInterval(50);
         this.robot.fullMode();
         this.robot.driveDirect(200,200);

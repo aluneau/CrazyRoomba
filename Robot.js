@@ -69,15 +69,12 @@ class Robot extends EventEmitter{
               //We update the assoc array
               if(data.packet.name == "Distance"){
                 //console.log("distance", data.data);
-                if(data.data > 60000){
-                    data.data = 0;
-                    //this.datas.set(data.packet.name, data.data);
-                }
                 if(this.datas.get("Distance") == undefined){
                     this.datas.set("Distance", 0);
                 }
-                this.datas.set(data.packet.name, this.datas.get("Distance") + data.data);
-                
+                if(data.data < 60000){                    
+                    this.datas.set(data.packet.name, this.datas.get("Distance") + data.data);
+                }
               }else{
                 this.datas.set(data.packet.name, data.data);
               }
@@ -347,7 +344,6 @@ class Robot extends EventEmitter{
     }*/
 
     getDistance(){
-        console.log("flag 2")
         //console.log("getDistance");
         this.pauseStreaming();
         this.streamSensors([19]);
@@ -358,19 +354,39 @@ class Robot extends EventEmitter{
                     if(this.datas.get("Distance")!=undefined){          
                         this.client.publish("/roomba/distance", JSON.parse(this.datas.get("Distance"))+"");    
                         //this.datas.set("Distance", 0);
-                        console.log("flag4");
                     }         
                 }.bind(this), 30);
-            console.log("flag3");
-            this.streamAllSensors();
-        }.bind(this), 15);
+            this.streamSensors([7]);
+        }.bind(this), 10);
     }
 
+
     turnAngle(angle){
-        console.log("flag 6");
+        if(angle>=0){
+            this.turnAngleLeft(angle);
+        }else{
+            this.turnAngleRight(angle);
+        }
+    }
+    turnAngleLeft(angle){
         this.fullMode();
         setTimeout(function(){
-            this._sendCommand([137,0,127,0,1,157,0,angle, 137, 0, 0, 0, 0]);            
+            this._sendCommand([137,0,255,0,1,157,0,angle, 137, 0, 0, 0, 0]);            
+        }.bind(this), 50)
+    }
+    
+
+    turnAngleRight(angle){
+        this.fullMode();
+        setTimeout(function(){
+            this._sendCommand([137,0,255,255,255,157,(angle >> 8) & 255, angle, 137, 0, 0, 0, 0]);            
+        }.bind(this), 50)
+    }
+
+    driveAndStop(){
+        this.fullMode();
+        setTimeout(function(){
+            this._sendCommand([152,31,150,0,137,1,44,128,0,158,5,137, 0, 0, 0, 0,148,2,19,13,137,0,255,0,1,157,0,45, 137, 0, 0, 0, 0]);            
         }.bind(this), 50)
     }
 
