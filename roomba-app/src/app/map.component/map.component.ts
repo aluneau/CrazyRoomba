@@ -30,7 +30,7 @@ export class MapComponent {
   @ViewChild("myCanvas") myCanvas;
   
   constructor() {
-    this.client = mqtt.connect('ws://127.0.0.1:8083/mqtt');
+    this.client = mqtt.connect('ws://192.168.1.100:8083/mqtt');
     this.client.on("connect", function(connack){
         console.log("Connecté");
         this.client.subscribe("/roomba/points");
