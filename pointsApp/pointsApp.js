@@ -1,6 +1,6 @@
 var mqtt = require("mqtt");
 
-var client = mqtt.connect("mqtt://127.0.0.1");
+var client = mqtt.connect("mqtt://192.168.1.100");
 
 var flag = 0;
 
@@ -43,12 +43,15 @@ client.on("connect", function(){
     //client.publish("/roomba/sendCommand", JSON.stringify([132,145,1,44,1,44,158,5,137,0,127,0,1,157,0,90,137,0,0,0,0,148,1,19]));
     setInterval(function(){
         client.publish("/roomba/getDistance");
-
+        client.publish("/roomba/getHeading");
     }, 500);
     
 });
 
 client.on("message", function(topic, message){
+    if(topic == "/roomba/heading"){
+        angle = JSON.parse(message);
+    }
     if(topic == "/roomba/datas"){
         let datas = JSON.parse(message);
         let BumpsAndWheelDrops = null;
@@ -64,15 +67,15 @@ client.on("message", function(topic, message){
 
             if(BumpsAndWheelDrops == 1){
                 client.publish("/roomba/turn", JSON.stringify(-turnAngle));    
-                angle-=turnAngle;
+                //angle-=turnAngle;
             }
             if(BumpsAndWheelDrops == 2){
                 client.publish("/roomba/turn", JSON.stringify(turnAngle));    
-                angle+=turnAngle;
+                //angle+=turnAngle;
             }
             if(BumpsAndWheelDrops == 3){
                 client.publish("/roomba/turn", JSON.stringify(100));    
-                angle+=100;
+                //angle+=100;
             }
 
             bump = 1;
@@ -94,13 +97,13 @@ client.on("message", function(topic, message){
         point.x = pointN_1.x + distance*Math.cos(convertToRadian(angle)) ;
         point.y = pointN_1.y + distance*Math.sin(convertToRadian(angle));
 
-        let toSend = "{\"x\":" + point.x/10 + ", \"y\":" + point.y/10 + ", \"bump\": "  + bump + "}";
+        let toSend = "{\"x\":" + point.x/10 + ", \"y\":" + point.y/10 + ", \"bump\": "  + bump + ", \"angle\":" + angle + "}";
         bump = 0;
         
         console.log(toSend);
         client.publish("/roomba/points", toSend);
 
-        angle%=360;
+        //angle%=360;
         console.log("Distance: ", retrivedDistance - pDistance);
         pDistance = retrivedDistance;
 

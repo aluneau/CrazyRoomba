@@ -5,10 +5,12 @@ declare var mqtt:any;
 class Point{
   x:number;
   y:number;
+  angle:number;
 
-  constructor(x: number, y: number){
+  constructor(x: number, y: number, angle:number){
     this.x = x;
     this.y = y;
+    this.angle = angle;
   }
 } 
 
@@ -38,11 +40,12 @@ export class MapComponent {
         if(topic == "/roomba/points"){
             let point = JSON.parse(message);
             if(point.bump){
-              this.pointsBump.push(new Point(point.x, point.y));
+              this.pointsBump.push(new Point(point.x, point.y, point.angle));
             }else{
-              this.pointsNoBump.push(new Point(point.x, point.y));
+              this.pointsNoBump.push(new Point(point.x, point.y, point.angle));
             }
             this.drawAllPoints();
+            this.drawRobot(point.x, point.y, point.angle);
           }
     }.bind(this));
   }
@@ -50,6 +53,26 @@ export class MapComponent {
   ngAfterViewInit() {
     let canvas = this.myCanvas.nativeElement;    
     this.context = canvas.getContext("2d");    
+  }
+
+  drawRobot(x:number, y:number, angle:number){
+    var v = [ [ 0, -12 ], [ -6, 6 ], [ 6, 6 ] ];    
+    var ctx = this.context;
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.restore();
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(angle);
+    ctx.fillStyle = "rgba(255, 0, 0, 1)";
+    ctx.beginPath();
+    ctx.moveTo(v[0][0],v[0][1]);
+    ctx.lineTo(v[1][0],v[1][1]);
+    ctx.lineTo(v[2][0],v[2][1]);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
   }
 
   drawAllPoints(){
