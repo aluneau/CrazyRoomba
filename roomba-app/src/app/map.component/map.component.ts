@@ -62,8 +62,8 @@ export class MapComponent {
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.restore();
     ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(angle);
+    ctx.translate(x+ctx.canvas.width/2,y+ctx.canvas.height/2);
+    ctx.rotate(angle * Math.PI/180);
     ctx.fillStyle = "rgba(255, 0, 0, 1)";
     ctx.beginPath();
     ctx.moveTo(v[0][0],v[0][1]);

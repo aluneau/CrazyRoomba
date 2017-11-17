@@ -38,6 +38,7 @@ client.on("connect", function(){
     console.log("MQTT Ok");
     client.subscribe("/roomba/datas");
     client.subscribe("/roomba/distance");
+    client.subscribe("/roomba/heading");
     client.publish("/roomba/driveDirect", JSON.stringify([100, 100]));
     
     //client.publish("/roomba/sendCommand", JSON.stringify([132,145,1,44,1,44,158,5,137,0,127,0,1,157,0,90,137,0,0,0,0,148,1,19]));
