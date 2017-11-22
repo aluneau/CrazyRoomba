@@ -30,7 +30,7 @@ export class MapComponent {
   @ViewChild("myCanvas") myCanvas;
   
   constructor() {
-    this.client = mqtt.connect('ws://192.168.1.100:8083/mqtt');
+    this.client = mqtt.connect('ws://localhost:8083/mqtt');
     this.client.on("connect", function(connack){
         console.log("Connecté");
         this.client.subscribe("/roomba/points");
@@ -63,7 +63,7 @@ export class MapComponent {
     ctx.restore();
     ctx.save();
     ctx.translate(x+ctx.canvas.width/2,y+ctx.canvas.height/2);
-    ctx.rotate(angle * Math.PI/180);
+    ctx.rotate(angle * Math.PI/180 + Math.PI/2);
     ctx.fillStyle = "rgba(255, 0, 0, 1)";
     ctx.beginPath();
     ctx.moveTo(v[0][0],v[0][1]);
