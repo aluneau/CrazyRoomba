@@ -36,3 +36,14 @@ C'est l'application qui va communiquer directement avec le robot. C'est elle qui
 
 #### Apllication RoombaAPP
 C'est l'application qui tourne sur un client web. Elle se connecte à l'application Server.js via le broker MQTT.
+#### Application PointsAPP
+C'est l'application qui permet la localisation aproximative du robot en fonction de son point de départ.
+
+#### Application TabletAPP
+C'est l'application qui tourne sur la tablette associé au robot. Elle permet d'envoyer l'angle à l'application PointsAPP et également un affichage sur le robot.
+
+## Organisation des dossiers
+`/` contiens tout les fichiers concernant le serveur notamment le point d'entré: `server.js` <br/>
+`config`contiens le fichier de configuration <br/>
+`pointsApp`contiens l'application PointsApp <br/>
+`roomba-app`contiens l'application Angular RoombaAPP
