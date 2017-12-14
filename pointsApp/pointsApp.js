@@ -38,17 +38,19 @@ client.on("connect", function(){
     console.log("MQTT Ok");
     client.subscribe("/roomba/datas");
     client.subscribe("/roomba/distance");
+    client.subscribe("/roomba/angle");
     client.publish("/roomba/driveDirect", JSON.stringify([100, 100]));
     
     //client.publish("/roomba/sendCommand", JSON.stringify([132,145,1,44,1,44,158,5,137,0,127,0,1,157,0,90,137,0,0,0,0,148,1,19]));
     setInterval(function(){
         client.publish("/roomba/getDistance");
-    }, 100);
+        client.publish("/roomba/getPhoneAngle");
+    }, 200);
     
 });
 
 client.on("message", function(topic, message){
-    if(topic == "/roomba/heading"){
+    if(topic == "/roomba/angle"){
         angle = JSON.parse(message);
     }
     if(topic == "/roomba/datas"){
@@ -66,15 +68,15 @@ client.on("message", function(topic, message){
 
             if(BumpsAndWheelDrops == 1){
                 client.publish("/roomba/turn", JSON.stringify(-turnAngle));    
-                angle-=turnAngle;
+                //angle-=turnAngle;
             }
             if(BumpsAndWheelDrops == 2){
                 client.publish("/roomba/turn", JSON.stringify(turnAngle));    
-                angle+=turnAngle;
+                //angle+=turnAngle;
             }
             if(BumpsAndWheelDrops == 3){
                 client.publish("/roomba/turn", JSON.stringify(100));    
-                angle+=100;
+                //angle+=100;
             }
 
             bump = 1;
@@ -87,7 +89,6 @@ client.on("message", function(topic, message){
         //console.log("BumpsAndWheelDrops", BumpsAndWheelDrops);
     }
     if(topic == "/roomba/distance"){
-        console.log("flag5");    
         let retrivedDistance = JSON.parse(message);
 
         let distance = retrivedDistance - pDistance;
@@ -99,11 +100,11 @@ client.on("message", function(topic, message){
         let toSend = "{\"x\":" + point.x/10 + ", \"y\":" + point.y/10 + ", \"bump\": "  + bump + ", \"angle\":" + angle + "}";
         bump = 0;
         
-        console.log(toSend);
+        //console.log(toSend);
         client.publish("/roomba/points", toSend);
 
         angle%=360;
-        console.log("Distance: ", retrivedDistance - pDistance);
+        //console.log("Distance: ", retrivedDistance - pDistance);
         pDistance = retrivedDistance;
 
         pointN_1 = point;

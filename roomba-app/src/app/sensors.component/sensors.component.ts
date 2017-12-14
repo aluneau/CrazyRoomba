@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 declare var Robot: any;
 import { HostListener } from '@angular/core';
+import { RetreiveConfig} from '../retreiveConfig';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'roomba-app',
@@ -13,6 +15,7 @@ export class SensorsComponent  {
   powerMotorRight: number;
   powerMotorLeft: number;
   maxSpeed = 200;
+  retreiveConfig:RetreiveConfig;
 
   @HostListener('document:keypress', ['$event'])
   handleKeyPressed(event: KeyboardEvent) {
@@ -50,17 +53,18 @@ export class SensorsComponent  {
 
 
 
-  constructor(){
+  constructor(private http: HttpClient){
     let testData = {
       name: "test",
       value: "255"
     };
-    this.datas.push(testData);
+    this.retreiveConfig = new RetreiveConfig(http);
+    this.retreiveConfig.getConfig().then(function(data){
+      let config:any = data;
+      this.robot = new Robot(config.mqttBroker);
 
-    this.robot = new Robot();
-
-    //On connection to the server
-    this.robot.on("connected", function(){
+      //On connection to the server
+      this.robot.on("connected", function () {
         console.log("connected");
         //We put roomba in safemode
         this.robot.safeMode();
@@ -68,7 +72,7 @@ export class SensorsComponent  {
         this.robot.streamSensors([7]);
         //this.robot.changeInterval(50);
         this.robot.fullMode();
-        this.robot.driveDirect(200,200);
+        this.robot.driveDirect(200, 200);
 
 
         // setTimeout(function(){
@@ -83,10 +87,13 @@ export class SensorsComponent  {
         // }.bind(this), 10000);
       }.bind(this));
 
-    //On data update
-    this.robot.on("datas", function(datas:any){
+      //On data update
+      this.robot.on("datas", function (datas: any) {
         //Update the model
         this.datas = datas;
+      }.bind(this));
     }.bind(this));
+    this.datas.push(testData);
+
   }
 }

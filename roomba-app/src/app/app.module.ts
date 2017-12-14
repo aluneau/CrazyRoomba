@@ -10,6 +10,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {PageNotFoundComponent} from './page-not-found.component/page-not-found.component'
 import {SensorsComponent} from "./sensors.component/sensors.component"
 import { MapComponent } from './map.component/map.component';
+import { HttpClientModule } from '@angular/common/http';
 
 const appRoutes: Routes = [
   { path: 'sensors', component: SensorsComponent },
@@ -39,6 +40,7 @@ const appRoutes: Routes = [
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    HttpClientModule,
     RouterModule.forRoot(
       appRoutes
       )

@@ -1,0 +1,4 @@
+{
+  "mqttBroker": "localhost:8083",
+  "robotSerial": "/dev/cu.usbserial-A700eXK6"
+}

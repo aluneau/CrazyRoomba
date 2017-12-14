@@ -2,14 +2,18 @@ var Robot = require("./Robot.js");
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var fs = require('fs');
 //var io = require('socket.io')(http);
 var mqtt = require('mqtt');
 
-//Initialize roomba connection
-roomba = new Robot("/dev/cu.usbserial-A700eXK6");
-//Pass the io connection to the roomba
+//Read config file
+var config = JSON.parse(fs.readFileSync(__dirname + '/config/config.json', 'utf8'));
 
-var client = mqtt.connect('mqtt://localhost');
+//Initialize roomba connection
+roomba = new Robot(config.robotSerial);
+
+//Pass the mqtt connection to the roomba
+var client = mqtt.connect('mqtt://' + config.mqttBroker.split(":")[0]);
 
 roomba.connect(client);
 
@@ -24,9 +28,12 @@ app.use("/", express.static(__dirname  + '/roomba-app/dist'));
 //Use node_modules
 app.use("/style.css", express.static(__dirname + "/roomba-app/style.css"));
 
+app.use('/config', express.static(__dirname + '/config'));
+
 app.use("/node_modules", express.static(__dirname + "/roomba-app/node_modules"));
 //Always redirect to "/" in order to use angular routes
 app.use("*", express.static(__dirname  + '/roomba-app/dist'));
+
 
 
 

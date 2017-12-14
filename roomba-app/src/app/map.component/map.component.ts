@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { RetreiveConfig } from '../retreiveConfig';
 declare var mqtt:any;
 
 class Point{
   x:number;
   y:number;
   angle:number;
-
   constructor(x: number, y: number, angle:number){
     this.x = x;
     this.y = y;
@@ -23,31 +24,36 @@ export class MapComponent {
   articles;
   client:any;
   context:CanvasRenderingContext2D;
-  
+  retreiveConfig:RetreiveConfig;
   pointsBump:Array<Point> = [];
   pointsNoBump:Array<Point> = [];
-
+  config:any;
   @ViewChild("myCanvas") myCanvas;
   
-  constructor() {
-    this.client = mqtt.connect('ws://localhost:8083/mqtt');
-    this.client.on("connect", function(connack){
-        console.log("Connecté");
-        this.client.subscribe("/roomba/points");
+  constructor(private http: HttpClient) {
+    this.retreiveConfig = new RetreiveConfig(http);
+    this.retreiveConfig.getConfig().then(function(data){
+        let config:any = data; 
+        this.client = mqtt.connect('ws://' + config.mqttBroker + '/mqtt');
+        this.client.on("connect", function(connack){
+            console.log("Connecté");
+            this.client.subscribe("/roomba/points");
+        }.bind(this));
+
+        this.client.on("message", function(topic, message){
+            if(topic == "/roomba/points"){
+                let point = JSON.parse(message);
+                if(point.bump){
+                  this.pointsBump.push(new Point(point.x, point.y, point.angle));
+                }else{
+                  this.pointsNoBump.push(new Point(point.x, point.y, point.angle));
+                }
+                this.drawAllPoints();
+                this.drawRobot(point.x, point.y, point.angle);
+              }
+        }.bind(this));
     }.bind(this));
 
-    this.client.on("message", function(topic, message){
-        if(topic == "/roomba/points"){
-            let point = JSON.parse(message);
-            if(point.bump){
-              this.pointsBump.push(new Point(point.x, point.y, point.angle));
-            }else{
-              this.pointsNoBump.push(new Point(point.x, point.y, point.angle));
-            }
-            this.drawAllPoints();
-            this.drawRobot(point.x, point.y, point.angle);
-          }
-    }.bind(this));
   }
   
   ngAfterViewInit() {
