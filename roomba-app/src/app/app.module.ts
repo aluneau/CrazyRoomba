@@ -11,6 +11,7 @@ import {PageNotFoundComponent} from './page-not-found.component/page-not-found.c
 import {SensorsComponent} from "./sensors.component/sensors.component"
 import { MapComponent } from './map.component/map.component';
 import { HttpClientModule } from '@angular/common/http';
+import { GrahamMapComponent } from './mapgraham.component/mapgraham.component';
 
 const appRoutes: Routes = [
   { path: 'sensors', component: SensorsComponent },
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
     pathMatch: 'full'
   },
   { path: 'map', component: MapComponent},
+  { path: 'mapgraham', component: GrahamMapComponent},
   { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -29,6 +31,7 @@ const appRoutes: Routes = [
     SensorsComponent,
     PageNotFoundComponent,
     MapComponent,
+    GrahamMapComponent,
     FilterPipe
   ],
   imports: [

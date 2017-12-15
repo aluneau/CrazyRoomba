@@ -129,7 +129,9 @@ class Robot extends EventEmitter{
             let JSONArray = [];
 
             for (let [key, value] of this.datas){
-
+                if (key =="BumpsAndWheelDrops" && value >0){
+                    this.client.publish('/roomba/bump', JSON.stringify(value));
+                }
                 JSONArray.push({name: key, value: value});
             }
             if(this.client != null){

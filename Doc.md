@@ -47,3 +47,10 @@ C'est l'application qui tourne sur la tablette associé au robot. Elle permet d'
 `config`contiens le fichier de configuration <br/>
 `pointsApp`contiens l'application PointsApp <br/>
 `roomba-app`contiens l'application Angular RoombaAPP
+## Basic installation:
+`git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm run setup` <br/>
+Ensuite vous pouvez taper la commande: `npm start` pour lancer le .<br/>
+Si vous voulez juste lancer le serveur: 
+`npm run serve` <br/>
+Si vous voulez juste build l'application angular: 
+`npm run build` 

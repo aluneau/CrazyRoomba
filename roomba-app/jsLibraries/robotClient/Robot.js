@@ -8,7 +8,7 @@ class Robot extends EventEmitter{
 		this.client = mqtt.connect('ws://' + mqttBroker + '/mqtt');
 
         this.client.on("connect", function(connack){
-            this.client.subscribe("/roomba/datas")
+            this.client.subscribe("/roomba/datas");
             this.emit("connected");
         }.bind(this));
 
