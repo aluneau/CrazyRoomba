@@ -63,7 +63,6 @@ client.on("message", function(topic, message){
         }
 
         if(BumpsAndWheelDrops != undefined &&  BumpsAndWheelDrops>0 && flag == 0){
-            console.log("Flag 1");
             //client.publish("/roomba/getDistance");
 
             if(BumpsAndWheelDrops == 1){

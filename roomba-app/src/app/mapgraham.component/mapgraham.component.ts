@@ -42,6 +42,7 @@ export class GrahamMapComponent {
                 }else{
                   this.pointsNoBump.push(new Point(point.x, point.y, point.angle));
                 }
+                this.drawBackground();
                 this.drawAllPoints();
                 this.drawRobot(point.x, point.y, point.angle);
                 if(this.boundaryPoints.length>0){
@@ -58,6 +59,7 @@ export class GrahamMapComponent {
     this.context = canvas.getContext("2d");
     var points = this.ArrayofpointsToArrayofarray(this.pointsBump);
     this.boundaryPoints = grahamScan(points);
+    this.drawBackground();
   }
 
   // Fonction qui permet de convertir un tableau d'objets de type Point en un tableau contenant dans un tableau les coordonnées des points
@@ -105,9 +107,29 @@ export class GrahamMapComponent {
     //Graham
     var points = this.ArrayofpointsToArrayofarray(this.pointsBump);
     this.boundaryPoints = grahamScan(points);
-    this.linkPoints(this.ArrayofarrayToArrayofpoints(this.boundaryPoints));
+    if(this.boundaryPoints.length > 0){
+      this.linkPoints(this.ArrayofarrayToArrayofpoints(this.boundaryPoints));
+    }
   }
 
+  drawBackground(){
+    let ctx = this.context;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    for (var x = 0.5; x < ctx.canvas.width; x += 10) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, ctx.canvas.height);
+    }
+
+    for (var y = 0.5; y < ctx.canvas.height; y += 10) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(ctx.canvas.width, y);
+    }
+
+    ctx.strokeStyle = "#eee";
+    ctx.stroke();
+
+
+  }
   drawRobot(x:number, y:number, angle:number){
     var v = [ [ 0, -12 ], [ -6, 6 ], [ 6, 6 ] ];    
     var ctx = this.context;
@@ -132,9 +154,6 @@ export class GrahamMapComponent {
   }
 
   drawAllPoints(){
-    var ctx = this.context;
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    
     for (let e of this.pointsNoBump){
       this.drawPoint(e.x, e.y, 0);
     }
