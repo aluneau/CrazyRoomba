@@ -43,7 +43,7 @@ setInterval(function () {
 
 var StateMachine = require('javascript-state-machine');
 var mqtt = require("mqtt");
-var strategyNumber = 1;
+var strategyNumber = 0;
 
 var machineEtat = new StateMachine({
     init: 'pause',
@@ -126,15 +126,20 @@ var machineEtat = new StateMachine({
 client.on("message", function choixStrategy(topic,message){
     if (topic == "/roomba/strategy") {
         strategyNumber = JSON.parse(message);
-        }
-        switch (strategyNumber) {
-            case 1: 
-                bumpAndTurn(topic, message);
-                break;
-            case 0:
-                resetRoomba(topic,message);
-                break;
-        }
+        console.log(strategyNumber );        
+    }
+    switch (strategyNumber) {
+        case 1:
+            bumpAndTurn(topic, message);
+            break;
+        case 0:
+            resetRoomba(topic, message);
+            break;
+    }
+
+    if(topic == "/roomba/reset"){
+        resetRoomba(topic, message);
+    }
     });
             
 
@@ -144,7 +149,8 @@ client.on("connect", function () {
     client.subscribe("/roomba/distance");
     client.subscribe("/roomba/angle");
     client.subscribe("/roomba/reset");
-    client.publish("/roomba/driveDirect", JSON.stringify([100, 100]));
+    client.subscribe("/roomba/strategy");
+    //client.publish("/roomba/driveDirect", JSON.stringify([100, 100]));
 
     //client.publish("/roomba/sendCommand", JSON.stringify([132,145,1,44,1,44,158,5,137,0,127,0,1,157,0,90,137,0,0,0,0,148,1,19]));
     setInterval(function () {
@@ -156,11 +162,10 @@ client.on("connect", function () {
 
 
 function resetRoomba(topicReset, messageReset){
+    client.publish("/roomba/driveDirect", JSON.stringify([0,0]));
     messageGlobal = null;
     distance = 0;
     pDistance = 0;
-    client.publish("/roomba/reset");
-
 }
 
 function bumpAndTurn(topicLocal, messageLocal){

@@ -154,6 +154,7 @@ class Robot extends EventEmitter{
             this.client.subscribe("/roomba/turn");
             this.client.subscribe("/roomba/getDistance");
             this.client.subscribe("/roomba/driveDirect");
+            this.client.subscribe("/roomba/reset");
         }.bind(this));
 
 
@@ -173,6 +174,11 @@ class Robot extends EventEmitter{
 
             if(topic == "/roomba/getDistance"){
                 this.getDistance();
+            }
+
+            if(topic == "/roomba/reset"){
+                this.stop();
+                this.datas.set("Distance", 0);
             }
 
             if(topic == "/roomba/driveDirect"){
