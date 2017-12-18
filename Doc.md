@@ -53,4 +53,7 @@ Ensuite vous pouvez taper la commande: `npm start` pour lancer le .<br/>
 Si vous voulez juste lancer le serveur: 
 `npm run serve` <br/>
 Si vous voulez juste build l'application angular: 
-`npm run build` 
+`npm run build` <br/>
+Si vous voulez lancer l'application de cartographie (pour utiliser la partie <b>GrahamMap</b> de l'application web vous devrez lancer:
+`node pointsApp/pointsApp.js`
+Attention, cela fera avancer le robot ! 

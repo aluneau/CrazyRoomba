@@ -19,7 +19,8 @@
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "concurrently": "^3.5.0"
+    "concurrently": "^3.5.0",
+    "javascript-state-machine": "^3.0.1"
   },
   "scripts": {
     "setup": "npm install && cd roomba-app && npm install",
