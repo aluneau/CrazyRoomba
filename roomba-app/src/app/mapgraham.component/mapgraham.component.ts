@@ -3,6 +3,8 @@ import { ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RetreiveConfig } from '../retreiveConfig';
 import { Point} from "../point";
+import { HostListener } from '@angular/core';
+
 declare var mqtt:any;
 declare var grahamScan: any;
 
@@ -31,6 +33,7 @@ export class GrahamMapComponent {
         this.client.on("connect", function(connack){
             console.log("Connecté");
             this.client.subscribe("/roomba/points");
+            this.client.publish("/roomba/streamSensors", JSON.stringify([7]));
         }.bind(this));
 
         this.client.on("message", function(topic, message){
@@ -130,6 +133,17 @@ export class GrahamMapComponent {
 
 
   }
+
+  startRobot(){
+    this.client.publish("/roomba/strategy", JSON.stringify(1));
+    console.log("run");
+  }
+
+  stopRobot(){
+    this.client.publish("/roomba/reset", "hello");
+    console.log("stop");
+  }
+
   drawRobot(x:number, y:number, angle:number){
     var v = [ [ 0, -12 ], [ -6, 6 ], [ 6, 6 ] ];    
     var ctx = this.context;

@@ -188,6 +188,15 @@ class Robot extends EventEmitter{
                     this.driveDirect(temp[0], temp[1]);                    
                 }.bind(this), 50);
             }
+
+            if(topic == "/roomba/streamSensors"){
+                let temp = JSON.parse(message);
+                this.streamSensors(temp);
+            }
+
+            if(topic == "/roomba/streamAllSensors"){
+                this.streamAllSensors();
+            }
         }.bind(this));
 
     }
