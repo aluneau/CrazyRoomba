@@ -7,6 +7,7 @@ import { HostListener } from '@angular/core';
 
 declare var mqtt:any;
 declare var grahamScan: any;
+declare var clusterMaker: any;
 
 
 @Component({
@@ -23,6 +24,9 @@ export class GrahamMapComponent {
   pointsNoBump:Array<Point> = [];
   config:any;
   boundaryPoints:any;
+  pointsClusters:Array<Point>=[];
+  clusters:any;
+  nb_clusters=2;
   @ViewChild("myCanvas") myCanvas;
   
   constructor(private http: HttpClient) {
@@ -40,8 +44,8 @@ export class GrahamMapComponent {
             if(topic == "/roomba/points"){
                 let point = JSON.parse(message);
                 if(point.bump){
-                  this.updateGraham();
                   this.pointsBump.push(new Point(point.x, point.y, point.angle));
+                  this.updateGraham();
                 }else{
                   this.pointsNoBump.push(new Point(point.x, point.y, point.angle));
                 }
@@ -83,6 +87,25 @@ export class GrahamMapComponent {
     return result;
   }
 
+  ArraytoCluster(t = []) {
+    var result = [];
+    for (let i = 0; i < t.length; i++) {
+      result.push([t[i].x, t[i].y]);
+    }
+    return result;
+  }
+
+  compareTab() {
+    for (var i = 0; i < this.pointsBump.length; i++) {
+      for (var j = 0; j < this.boundaryPoints.length - 1; j++) {
+        if (this.pointsBump[i] != this.boundaryPoints[j]) {
+          this.pointsClusters.push(this.pointsBump[i]);
+        }
+      }
+    }
+    //return this.pointsClusters;
+  }
+
   // Relie les différents points du tableau entré en paramètre
   linkPoints(t = []) {
     var ctx = this.context;
@@ -109,9 +132,26 @@ export class GrahamMapComponent {
   updateGraham(){
     //Graham
     var points = this.ArrayofpointsToArrayofarray(this.pointsBump);
+    //console.log(points);
     this.boundaryPoints = grahamScan(points);
+    //console.log(this.boundaryPoints);
     if(this.boundaryPoints.length > 0){
       this.linkPoints(this.ArrayofarrayToArrayofpoints(this.boundaryPoints));
+    }
+  }
+
+  updateClusters() {
+    this.compareTab();
+    //number of clusters, defaults to undefined
+    clusterMaker.k(this.nb_clusters);
+    //number of iterations (higher number gives more time to converge), defaults to 1000
+    clusterMaker.iterations(750);
+    //data from which to identify clusters, defaults to []
+    clusterMaker.data(this.ArraytoCluster(this.pointsClusters));
+    this.clusters = clusterMaker.clusters();
+    for (var i = 0; i < this.nb_clusters; i++) {
+      var boundaryPoints = grahamScan(this.clusters[i].points);
+      this.linkPoints(this.ArrayofarrayToArrayofpoints(boundaryPoints));
     }
   }
 
@@ -140,6 +180,7 @@ export class GrahamMapComponent {
   }
 
   stopRobot(){
+    this.client.publish("/roomba/strategy", JSON.stringify(0));
     this.client.publish("/roomba/reset", "hello");
     console.log("stop");
   }
