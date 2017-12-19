@@ -1,4 +1,4 @@
-import { setInterval, setTimeout } from "timers";
+
 
 var mqtt = require("mqtt");
 var StateMachine = require('javascript-state-machine');
@@ -18,7 +18,7 @@ const divisionEnRadian = ((Math.PI) / 180);
 var angleActuel = 0;
 
 
-var strategyNumber = 0;
+var strategyNumber = 2;
 
 var messageGlobal=null;
 
@@ -44,30 +44,30 @@ var pointN_1 = new Point();
 var machineAngle = new StateMachine({
     init: 'base',
     transitions:[
-        {name: 'definiAngle', from:'base', to:'depart'},
-        {name: 'turnAngle', from: 'depart', to: 'tourner'},
-        {name: 'waitAngle', from:'tourner', to:'wait'},
-        {name: 'waitLoop', from: 'wait', to:'wait'},
-        {name: 'sortieAngle', from:'wait', to:'sortie'},
-        {name: 'base', from:'*', to:'base'},
+        {name: 'basetodepart', from:'base', to:'depart'},
+        {name: 'departtotourner', from: 'depart', to: 'tourner'},
+        {name: 'tournertowait', from:'tourner', to:'wait'},
+        {name: 'waittowait', from: 'wait', to:'wait'},
+        {name: 'waittosortie', from:'wait', to:'sortie'},
+        {name: 'alltobase', from:'*', to:'base'},
         {name: 'goto', from: '*', to: function(state){return state;} }
     ],
     methods:
     {
         onEnterBase: function(){
-            machineAngle.definiAngle();
+           
         },
         onEnterDepart: function(){
                 angleActuel = 180 - angle;
                 flagSortieMachineEtat = 0;  
-                machineAngle.turnAngle();
+                
         },
         onEnterTourner: function(){
             client.publish("/roomba/turn", JSON.stringify(angleActuel));
             setTimeout(function(){     
                },2000);
-            /*flagAngle = true; */
-            machineAngle.waitAngle();
+            flagAngle = true; 
+            //=====machineAngle.waitAngle();
 
         },
         onEnterWait: function(){
@@ -75,12 +75,7 @@ var machineAngle = new StateMachine({
             angleActuel = 180 - angle;
             //this.waitLoop();
            
-            if(flagAngle == true && Math.abs(angleActuel) < 10){
-                machineAngle.sortieAngle();
-            }else{
-                
-                    machineAngle.goto('depart');
-            }
+            
         },
         onEnterSortie: function(){
 
@@ -93,13 +88,37 @@ function geolocalisation(topicGeolocal,messageGeolocal){
 
     sendPoints(topicGeolocal,messageGeolocal);
     
+    if (machineAngle.state == 'base')
+    { machineAngle.basetodepart();
+    }
+    if (machineAngle.state == 'depart'){
+        machineAngle.departtotourner();
+    }
+    if (machineAngle.state == 'tourner'){
+        machineAngle.tournertowait();
+    }
+    if (machineAngle.state == 'wait'){
+        if (flagAngle == true && Math.abs(angleActuel) < 10) {
+            machineAngle.waittosortie();
+        } else if (flagAngle == false) {
 
-    if(angle != null || angle != undefined && flagSortieMachineEtat == 1){
+            
+        }else {
+            machineAngle.goto('depart');
+        }
+        
+    }
+    if (machineAngle.state == 'sortie'){
+        
+    }
+
+    /*if(angle != null || angle != undefined && flagSortieMachineEtat == 1){
         flagSortieMachineEtat = 0;
         machineAngle.goto('base');
+        machineAngle.
         flagSortieMachineEtat = 1;
     }
-    /*if(angleActuel < 180 && flagSortieMachineEtat == 0){
+    if(angleActuel < 180 && flagSortieMachineEtat == 0){
         machineAngle.turnAngle();
         machineAngle.waitAngle();
     }else{if(angleActuel >= 180 && flagSortieMachineEtat == 0){
@@ -119,6 +138,10 @@ function geolocalisation(topicGeolocal,messageGeolocal){
             geolocalisation();
         }
     }*/
+
+    
+    
+    
 }
 
 
@@ -299,7 +322,7 @@ var sendPoint = new StateMachine({
                         BumpsAndWheelDrops = datas[i].value;
                     }
                 }
-k
+
                 if (BumpsAndWheelDrops != undefined && BumpsAndWheelDrops > 0 && flag == false) {
                     let angleChoisi = 0;
                     switch(BumpsAndWheelDrops){
