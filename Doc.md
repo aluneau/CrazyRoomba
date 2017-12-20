@@ -69,7 +69,9 @@ Si vous voulez juste build l'application angular:
 `npm run build` <br/>
 Si vous voulez lancer l'application de cartographie (pour utiliser la partie <b>GrahamMap</b> de l'application web vous devrez lancer:
 `node state-machine/cartography.js`
-
+## Configuration
+Il existe un fichier de configuration dans le projet. Il se trouve dans: `config/config.js`. 
+Ce fichier comporte le port série à utiliser avec le robot et l'addresse IP du broker MQTT+son port websocket à utiliser pour toute les applications.
 ## Server.js
 C'est dans ce fichier que se trouve la déclaration du serveur web express.js il gère également la connexion avec le broker mqtt. Il appelle la classe robot.js (version serveur).
 

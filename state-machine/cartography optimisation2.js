@@ -115,7 +115,7 @@ function geolocalisation(topicGeolocal,messageGeolocal){
     /*if(angle != null || angle != undefined && flagSortieMachineEtat == 1){
         flagSortieMachineEtat = 0;
         machineAngle.goto('base');
-        machineAngle.
+        machineAngle. 
         flagSortieMachineEtat = 1;
     }
     if(angleActuel < 180 && flagSortieMachineEtat == 0){

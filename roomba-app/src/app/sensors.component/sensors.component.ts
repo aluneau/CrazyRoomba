@@ -16,7 +16,7 @@ export class SensorsComponent  {
   powerMotorLeft: number;
   maxSpeed = 200;
   retreiveConfig:RetreiveConfig;
-
+  sensorsIds:any;
   @HostListener('document:keypress', ['$event'])
   handleKeyPressed(event: KeyboardEvent) {
     let keyPressed = event.key;
@@ -95,5 +95,16 @@ export class SensorsComponent  {
     }.bind(this));
     this.datas.push(testData);
 
+  }
+
+  streamSensors(){
+    console.log(JSON.parse(this.sensorsIds));
+    if(this.sensorsIds != ""){
+      this.robot.streamSensors(JSON.parse(this.sensorsIds));
+    }
+  }
+
+  streamAllSensors(){
+    this.robot.streamAllSensors();
   }
 }

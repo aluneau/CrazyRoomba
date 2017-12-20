@@ -1,8 +1,15 @@
 <div>
     <div class="example-header">
-        <mat-form-field floatPlaceholder="never">
-        <input autocomplete="off" [(ngModel)]="searchText" matInput placeholder="Filter by name">
+        <mat-form-field class="input-space" floatPlaceholder="never">
+            <input autocomplete="off" [(ngModel)]="searchText" matInput placeholder="Filter by name">
         </mat-form-field>
+    </div>
+    <div class="example-header">
+        <mat-form-field class="input-space" floatPlaceholder="never">
+            <input autocomplete="off" [(ngModel)]="sensorsIds" matInput placeholder="Ids">
+        </mat-form-field>
+        <a class="btn btn-primary" (click)="streamSensors()">Stream Sensors</a>
+        <a class="btn btn-primary" (click)="streamAllSensors()">StreamAllSensors</a>
     </div>
 
     <div class="example-container mat-elevation-z8">            

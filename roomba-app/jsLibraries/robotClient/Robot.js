@@ -127,19 +127,21 @@ class Robot extends EventEmitter{
         this._setCommand([144, driver1, driver2, driver3]);
     }
     streamSensors(ids) {
-        this._sendCommand([148, ids.length, ...ids]);
+        this.client.publish("/roomba/streamSensors", JSON.stringify(ids));
     }
     streamAllSensors() {
-        var ids = Object.keys(Robot.sensorPackets);
-        var _ids = [];
+        // var ids = Object.keys(Robot.sensorPackets);
+        // var _ids = [];
 
-        for (let i = 0; i < ids.length; i++){
-            if(ids[i] != 19 && ids[i] != 20){
-                _ids.push(ids[i]);
-            }
-        }
+        // for (let i = 0; i < ids.length; i++){
+        //     if(ids[i] != 19 && ids[i] != 20){
+        //         _ids.push(ids[i]);
+        //     }
+        // }
 
-        this.streamSensors(_ids);
+        //this.streamSensors(_ids);
+        console.log("bonjour2");
+        this.client.publish("/roomba/streamAllSensors", "hello");
     }
     getDistance(){
         this.pauseStreaming();
