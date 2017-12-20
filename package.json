@@ -27,7 +27,7 @@
     "build": "cd roomba-app && ng build",
     "build:watch": "cd roomba-app && ng build --watch",
     "serve": "node server.js",
-    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\" \"node state-machine/cartography.js\"",
     "pointsApp": "concurrently \"npm run serve\" \"node pointsApp/pointsApp.js\""
   },
   "repository": {
