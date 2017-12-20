@@ -25,7 +25,7 @@ class Robot extends EventEmitter{
         this._buffer = new CircularBuffer(1024);
 
         this.portName = portName;
-
+        this.sensorsToStream = [7];
 
         //Configuration of serialPort
         this.port = new SerialPort(this.portName, {
@@ -365,8 +365,8 @@ class Robot extends EventEmitter{
     getDistance(){
         //console.log("getDistance");
         this.pauseStreaming();
+        let temp = this.sensorsToStream;
         this.streamSensors([19], false);
-
         setTimeout(function(){
             //console.log(this.datas.get("Distance"));
                 setTimeout(function(){
@@ -375,7 +375,7 @@ class Robot extends EventEmitter{
                         //this.datas.set("Distance", 0);
                     }         
                 }.bind(this), 30);
-            this.streamSensors([7], false);
+            this.streamSensors(temp, false);
         }.bind(this), 10);
     }
 
@@ -410,6 +410,7 @@ class Robot extends EventEmitter{
     }
 
     streamSensors(ids, clear) {
+        this.sensorsToStream = ids;
         setTimeout(function(){
             if(clear){
                 this.pauseStreaming();
