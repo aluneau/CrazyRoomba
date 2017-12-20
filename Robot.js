@@ -193,11 +193,11 @@ class Robot extends EventEmitter{
 
             if(topic == "/roomba/streamSensors"){
                 let temp = JSON.parse(message);
-                this.streamSensors(temp);
+                this.streamSensors(temp, true);
             }
 
             if(topic == "/roomba/streamAllSensors"){
-                this.streamAllSensors();
+                this.streamAllSensors(true);
             }
         }.bind(this));
 
@@ -365,7 +365,7 @@ class Robot extends EventEmitter{
     getDistance(){
         //console.log("getDistance");
         this.pauseStreaming();
-        this.streamSensors([19]);
+        this.streamSensors([19], false);
 
         setTimeout(function(){
             //console.log(this.datas.get("Distance"));
@@ -375,7 +375,7 @@ class Robot extends EventEmitter{
                         //this.datas.set("Distance", 0);
                     }         
                 }.bind(this), 30);
-            this.streamSensors([7]);
+            this.streamSensors([7], false);
         }.bind(this), 10);
     }
 
@@ -409,16 +409,20 @@ class Robot extends EventEmitter{
         }.bind(this), 50)
     }
 
-    streamSensors(ids) {
-        this.pauseStreaming();
+    streamSensors(ids, clear) {
         setTimeout(function(){
-            this.datas.clear();
+            if(clear){
+                this.pauseStreaming();
+                this.datas.clear();
+            }
             this._sendCommand([148, ids.length, ...ids]);
         }.bind(this), 50);
     }
-    streamAllSensors() {
-        this.pauseStreaming();
-        this.datas.clear();
+    streamAllSensors(clear) {
+        if(clear){
+            this.pauseStreaming();
+            this.datas.clear();
+        }
         var ids = Object.keys(Robot.sensorPackets);
         var _ids = [];
 
