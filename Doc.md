@@ -1,11 +1,11 @@
 # Documentation projet CrazyRoomba
 ## Présentation du projet
-Le projet CrazyRoomba est un projet permettant de transformer la plateforme iCreate (v1) de iRobot en un robot compagnion connecté. Nous avons également intégré un système permettant de récuperer la position du robot par rapport à sa position de départ.<br/>
-Le système repose entièrement sur le protocol MQTT pour l'échange des données entre les differentes partis du projet et possiblement avec d'autres objets connectés.
+Le projet CrazyRoomba est un projet permettant de transformer la plateforme iCreate (v1) de iRobot en un robot compagnon connecté. Nous avons également intégrer un système permettant de récuperer la position du robot par rapport à sa position de départ.<br/>
+Le système repose entièrement sur le protocol MQTT pour l'échange des données entre les differentes parties du projet et possiblement avec d'autres objets connectés.
 
 ## Le matériel utilisé
-Le projet repose en plus de la plateforme iCreate sur un raspberry pi pour gerer la récuperation et l'envoie de données au robot. Il utilise également une tablette pour permettre un affichage directement sur le robot ainsi que la récupération de l'angle (l'angle donné par la plateforme iCreate n'étant pas assez précis).<br/>
-Pour ce projet le matériel qui a été utilisé est exactement:
+Le projet repose en plus de la plateforme iCreate sur un raspberry pi pour gérer la récuperation et l'envoie de données au robot. Il utilise également une tablette pour permettre un affichage directement sur le robot ainsi que la récupération de l'angle (l'angle donné par la plateforme iCreate n'étant pas assez précis).<br/>
+Pour ce projet, le matériel qui a été utilisé est le suivant:
 <ul>
 <li>Gigabyte Tegra note 7</li>
 <li>Raspberry Pi 3 sous Raspbian</li>
@@ -16,22 +16,22 @@ Pour ce projet le matériel qui a été utilisé est exactement:
 # Logiciel et frameworks utilisés
 ## Logiciels
 ### emqtt.io
-Le projet est conçu autour du protocol MQTT. Pour le faire fonctionner il vous faudra donc un broker MQTT fonctionnel. Nous avons fait le choix de <a href="http://emqtt.io/">emqtt.io</a> qui est un broker écrit en erLang et permet d'effectuer une infrastructure distribué très facilement. Il permet de gerer 4000 messages par secondes en entré et 20000 messages par secondes en sortie par noeuds (<a href="https://github.com/emqtt/emqttd/wiki/benchmark-for-0.13.0-release">sources</a>). Il implémente le protocol MQTT V3.1.1 supporte à la fois une connection directement via le protocol MQTT(port 1083 par défaut) ou via Websocket (port 8083 par défaut).
+Le projet est conçu autour du protocol MQTT. Pour le faire fonctionner, il vous faudra donc un broker MQTT fonctionnel. Nous avons fait le choix de <a href="http://emqtt.io/">emqtt.io</a> qui est un broker écrit en erLang et permet d'effectuer une infrastructure distribuée très facilement. Il permet de gérer 4000 messages par secondes en entrée et 20000 messages par seconde en sortie par noeuds (<a href="https://github.com/emqtt/emqttd/wiki/benchmark-for-0.13.0-release">sources</a>). Il implémente le protocol MQTT V3.1.1 supporte à la fois une connexion directement via le protocole MQTT(port 1083 par défaut) ou via Websocket (port 8083 par défaut).
 
-## Frameworks et libraries
+## Frameworks et bibliothèques
 ### Frameworks
-Le projet se base principalement sur le framework <b>Angular</b>. Il a donc été développer principalement en typeScript. Nous avons également utilisé nodeJs pour la parti serveur se trouvant sur le raspberry pi. <br/>
-<b>Ionic</b> a aussi été utilisé (lui même basé sur <b>Angular</b>) pour creer l'application tablette. 
-### Libraries
+Le projet se base principalement sur le framework <b>Angular</b>. Il a donc été développé principalement en typeScript. Nous avons également utilisé nodeJs pour la partie serveur se trouvant sur le raspberry pi. <br/>
+<b>Ionic</b> a aussi été utilisé (lui-même basé sur <b>Angular</b>) pour créer l'application tablette. 
+### Bibliothèques
 <ul>
 <li>MQTTjs</li>
 <li>Serialport (pour nodeJS)</li>
 </ul>
 
 ## Découpage du projet
-Grâce a sa conception autour du protocol MQTT nous avons pu découper facilement l'ensemble notre projet en plusieurs application.
+Grâce a sa conception autour du protocol MQTT, nous avons pu découper facilement l'ensemble de notre projet en plusieurs applications.
 <img src="imgdoc/img1.png"/>
-### Les trois grandes partis de l'application sont:
+### Les trois grandes parties de l'application sont:
 #### Application Server.js
 C'est l'application qui va communiquer directement avec le robot. C'est elle qui va récuperer les différentes données des capteurs. Elle va également envoyer des commandes au robot. Elle utilise la librairie serialport.
 
@@ -41,44 +41,44 @@ C'est l'application qui tourne sur un client web. Elle se connecte à l'applicat
 C'est l'application qui permet la localisation aproximative du robot en fonction de son point de départ.
 
 #### Application TabletAPP
-C'est l'application qui tourne sur la tablette associé au robot. Elle permet d'envoyer l'angle à l'application PointsAPP et également un affichage sur le robot.
+C'est l'application qui tourne sur la tablette associée au robot. Elle permet d'envoyer l'angle à l'application PointsAPP et également un affichage sur le robot.
 
 ## Organisation des dossiers
-`/` contiens tout les fichiers concernant le serveur notamment le point d'entré: `server.js` <br/>
+`/` contient tous les fichiers concernant le serveur notamment le point d'entrée: `server.js` <br/>
 `config`contiens le fichier de configuration <br/>
 `pointsApp`contiens l'application PointsApp <br/>
 `roomba-app`contiens l'application Angular RoombaAPP<br/>
-`roomba-app/jsLibrairies` est appelé sur `http://localhost:3000/librairies`. C'est ici que sont stockées les librairies javascript pour la partie client (notamment robot.js version client).
+`roomba-app/jsLibrairies` est appelé sur `http://localhost:3000/librairies`. C'est ici que sont stockées les bibliothèques javascript pour la partie client (notamment robot.js version client).
 
 ## Fonctionnement de eMQTT.io
 ### Principe de base
-MQTT est un protocol basé sur le mécanisme de "publish"/"subscribe". 
+MQTT est un protocole basé sur le mécanisme de "publish"/"subscribe". 
 On s'abonne à un évenement afin de pouvoir en être notifié. Et on publie afin de notifier les abonnés.
 ### Clusteriser emqtt.io
-Un des objectifs du projet était de créer un cluster (infra distribuée). Emqtt.io possède déjà cette possibilité. Pour cela il suffit de modifier le nom de noeud dans `/etc/emq.conf` et changer la valeur de `node.name` comme : `node.name = emq@192.168.0.10` par exemple.
-Ensuite pour joindre une instance (attention à l'ouverture de vos ports dans le par feu) il suffit de taper la commande  `./bin/emqttd_ctl cluster join emq@192.168.0.10` par exemple. Dans ce cas l'instance sur laquelle vous executez la commande va être mise en cluster avec `emq@192.168.0.10`. Elles vont travailler ensemble.
+L'un des objectifs du projet était de créer un cluster (infra distribuée). Emqtt.io possède déjà cette possibilité. Pour cela il suffit de modifier le nom de noeud dans `/etc/emq.conf` et changer la valeur de `node.name` comme : `node.name = emq@192.168.0.10` par exemple.
+Ensuite pour joindre une instance (attention à l'ouverture de vos ports dans le parefeu) il suffit de taper la commande  `./bin/emqttd_ctl cluster join emq@192.168.0.10` par exemple. Dans ce cas, l'instance sur laquelle vous exécutez la commande va être mise en cluster avec `emq@192.168.0.10`. Elles vont travailler ensemble.
 
 ## Installation du projet:
-Il faudra tout d'abbord installer angular-cli. Et également ionic pour pouvoir compiler l'application android de la tablette. <br/>
-Il vous faudra également une instance de emqtt.io. Je vous conseille d'utiliser le bash pour ubuntu si vous êtes sous windows car cela rendra les choses plus simple pour la suite. Ensuite il vous faudra cloner le dépot github et installer tous les plugins nécessaire à son fonctionnement grâce à cette commande:
+Il faudra tout d'abord installer angular-cli. Et également ionic pour pouvoir compiler l'application android de la tablette. <br/>
+Il vous faudra également une instance de emqtt.io. Je vous conseille d'utiliser le bash pour ubuntu si vous êtes sous windows car cela rendra les choses plus simples pour la suite. Ensuite il vous faudra cloner le dépot github et installer tous les plugins nécessaires à son fonctionnement grâce à cette commande:
 `git clone https://github.com/bloudman/CrazyRoomba.git && cd CrazyRoobma && npm run setup` <br/>
 Ensuite vous pouvez taper la commande: `npm start` pour le lancer .<br/>
 Si vous voulez juste lancer le serveur: 
 `npm run serve` <br/>
-Si vous voulez juste build l'application angular: 
+Si vous voulez juste compiler l'application angular: 
 `npm run build` <br/>
-Si vous voulez lancer l'application de cartographie (pour utiliser la partie <b>GrahamMap</b> de l'application web vous devrez lancer:
-`node state-machine/cartography.js`
+
 ## Configuration
 Il existe un fichier de configuration dans le projet. Il se trouve dans: `config/config.js`. 
-Ce fichier comporte le port série à utiliser avec le robot et l'addresse IP du broker MQTT+son port websocket à utiliser pour toute les applications.
+Ce fichier comporte le port série à utiliser avec le robot et l'addresse IP du broker MQTT+son port websocket à utiliser pour toutes les applications (sauf l'application de la tablette) ou vous pouvez bien sûr changer manuellement l'ip dans toutes les applications plutôt que d'utiliser celle de config.js.
+
 ## Server.js
-C'est dans ce fichier que se trouve la déclaration du serveur web express.js il gère également la connexion avec le broker mqtt. Il appelle la classe robot.js (version serveur).
+C'est dans ce fichier que se trouve la déclaration du serveur web express.js. Il gère également la connexion avec le broker mqtt. Il appelle la classe robot.js (version serveur).
 
 ## Robot.js
-Il y a 2 classes Robot.js dans ce projet l'une est utilisé par le serveur et est située à la racine et l'autre est utilisé par le client et est stocké dans `roomba-app/jsLibrairies` 
+Il y a 2 classes Robot.js dans ce projet : l'une est utilisée par le serveur et est située à la racine et l'autre est utilisée par le client et est stockée dans `roomba-app/jsLibrairies` 
 ### Coté serveur
-Il s'agit de la classe qui gère la connexion avec le robot. Le robot parle via une communication série. La classe agit donc comme une interface qui peut être utilisé directement en js ou via le broker 
+Il s'agit de la classe qui gère la connexion avec le robot. Le robot parle via une communication série. La classe agit donc comme une interface qui peut être utilisée directement en js ou via le broker 
 ### Coté client
 Il permet d'utiliser les mêmes méthodes en apparence que sur le coté serveur.
 ### Les méthodes de Robot.js (version serveur/client)
@@ -180,7 +180,7 @@ Resume streaming after pause
 	<tr><td>LeftVelocity</td><td>42</td><td></td></tr>
 </table>
 
-#### Evenements du robot:
+#### Evènements du robot:
 <table>
 	<tr><th>EventName</th><th>Id</th></tr>
 	<tr><td>wheel-drop</td><td>1</td></tr>
@@ -207,7 +207,7 @@ Resume streaming after pause
 	<tr><td>passive</td><td>22</td></tr>
 </table>
 
-#### Différentess démos:
+#### Différentes démos:
 <table>
 	<tr><th>DemoName</th><th>Id</th></tr>
 	<tr><td>abort</td><td>255</td></tr>
@@ -224,48 +224,48 @@ Resume streaming after pause
 </table>
 
 
-### Evenements de la librairie
-Cette classe est basé sur EventEmitter (coté client et coté serveur). Vous pouvez récuperer un évenement comme ceci:
+### Evènements de la librairie
+Cette classe est basée sur EventEmitter (côté client et côté serveur). Vous pouvez récuperer un évenement comme ceci:
 
 ```js
 roomba.on('event', function(data){
 	console.log(data);
 });
 ```
-### Coté client et serveur:
+### Côté client et serveur:
 #### `connected`
-Est déclenché lorsque le robot est connecté
+Est déclenché lorsque le robot est connecté.
 ***
 #### `datas`
-Récupere le tableau de donnés de tous les capteurs demandés (via streamSensors) toutes les 50ms (par défaut, voir changeEmission pour le modifier).
+Récupere le tableau de données de tous les capteurs demandés (via streamSensors) toutes les 50ms (par défaut, voir changeEmission pour le modifier).
 ***
-### Coté serveur uniquement
+### Côté serveur uniquement
 #### `data`
-Donnée d'un seul capteur à la fois
+Donnée d'un seul capteur à la fois.
 ***
 #### `errordata`
 Le checksum de la dernière donnée remontée est incorrect.
 ***
 #### `packetNotFound`
-La donnée reçu ne correspond à aucun capteur de la liste. On ne la prend pas en compte car elle est incorrect.
+La donnée reçue ne correspond à aucun capteur de la liste. On ne la prend pas en compte car elle est incorrecte.
 
 ### Que se passe-t-il lorsque le robot est mal connecté ? 
-Lorsque le robot n'est pas correctement connecté au server va se mettre en "FakeRobot mode". Il va envoyer au client des fausses données pour faciliter le debuggage.
+Lorsque le robot n'est pas correctement connecté au serveur, il va se mettre en "FakeRobot mode". Il va envoyer au client des fausses données pour faciliter le debuggage.
 
 ## MQTT API
-Même si vous pouvez tout à fait inclure la version client de robot.js afin d'utiliser le robot avec les méthodes cités si dessus l'interet du projet est que vous pouvez tout faire avec n'importe quelle librairie client d'MQTT et utiliser l'api intégré. Lors de ce projet nous avons utiliser mqttjs mais vous pouvez utilisé une librairie dans un autre langage pour controler le robot.
+Même si vous pouvez tout à fait inclure la version client de robot.js afin d'utiliser le robot avec les méthodes citées ci-dessus, l'intérêt du projet est que vous pouvez tout faire avec n'importe quelle librairie client d'MQTT et utiliser l'api intégrée. Lors de ce projet, nous avons utiliser mqttjs mais vous pouvez utiliser une librairie dans un autre langage pour contrôler le robot.
 <table>
 <tr><th>Nom</th><th>Paramètres</th><th>Utilisation</th></tr>
 <tr><td>/roomba/datas</td><td>aucun</td><td>Récupère le tableau de données sous ce format:`[{"name":"Velocity","value":0},{"name":"CliffFrontLeftSignal","value":0}...`</td></tr>
-<tr><td>/roomba/getDistance</td><td>aucun</td><td>Demande le rafraichissement de la distance et l'envoie de `/roomba/distance`</td>
-<tr><td>/roomba/distance</td><td>aucun</td><td>Récupère la distance demandé avec `/roomba/getDistance` (attention distance depuis le départ du robot ou d'un reset)</td>
-<tr><td>/roomba/getPhoneAngle</td><td>aucun</td><td>Demande le rafraichissement et de retourner l'angle de la tablette sur : `/roomba/angle`</td></tr>
+<tr><td>/roomba/getDistance</td><td>aucun</td><td>Demande le rafraîchissement de la distance et l'envoi de `/roomba/distance`</td>
+<tr><td>/roomba/distance</td><td>aucun</td><td>Récupère la distance demandée avec `/roomba/getDistance` (attention distance depuis le départ du robot ou d'un reset)</td>
+<tr><td>/roomba/getPhoneAngle</td><td>aucun</td><td>Demande le rafraîchissement et de retourner l'angle de la tablette sur : `/roomba/angle`</td></tr>
 <tr><td>/roomba/angle</td><td>aucun</td><td>c'est ici que l'angle de la tablette est récupéré</td></tr>
-<tr><td>/roomba/streamSensors</td><td>`[id1, id2, id3...]`</td><td>Permet d'acceder à la méthode streamSensors de robot.js</td></tr>
+<tr><td>/roomba/streamSensors</td><td>`[id1, id2, id3...]`</td><td>Permet d'accéder à la méthode streamSensors de robot.js</td></tr>
 <tr><td>/roomba/streamAllSensors</td><td>aucun</td><td>Stream tous les capteurs</td></tr>
-<tr><td>/roomba/strategy</td><td>`StrategyNumber`</td><td>Déclenche la stragénie: `StrategyNumber`sur la machine d'état</td>
-<tr><td>/roomba/reset</td><td>aucun</td><td>Stop le robot et reset la distance</td></tr>
-<tr><td>/roomba/driveDirect</td><td>`[motor1, motor2]`</td><td>Met le puissance du moteur droit sur motor1 et celle du moteur gauche sur motor2</td></tr>
+<tr><td>/roomba/strategy</td><td>`StrategyNumber`</td><td>Déclenche la stratégie: `StrategyNumber`sur la machine d'état</td>
+<tr><td>/roomba/reset</td><td>aucun</td><td>Stoppe le robot et reset la distance</td></tr>
+<tr><td>/roomba/driveDirect</td><td>`[motor1, motor2]`</td><td>Met la puissance du moteur droit sur motor1 et celle du moteur gauche sur motor2</td></tr>
 </table>
 
 ### Exemple d'utilisation de MQTT.Js
