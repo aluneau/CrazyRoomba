@@ -157,6 +157,7 @@ class Robot extends EventEmitter{
             this.client.subscribe("/roomba/reset");
             this.client.subscribe("/roomba/streamSensors");
             this.client.subscribe("/roomba/streamAllSensors");
+            this.fullMode();
         }.bind(this));
 
 
