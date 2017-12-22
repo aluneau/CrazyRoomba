@@ -48,7 +48,8 @@ C'est l'application qui tourne sur la tablette associée au robot. Elle permet d
 `config`contiens le fichier de configuration <br/>
 `pointsApp`contiens l'application PointsApp <br/>
 `roomba-app`contiens l'application Angular RoombaAPP<br/>
-`roomba-app/jsLibrairies` est appelé sur `http://localhost:3000/librairies`. C'est ici que sont stockées les bibliothèques javascript pour la partie client (notamment robot.js version client).
+`roomba-app/jsLibrairies` est appelé sur `http://localhost:3000/librairies`. C'est ici que sont stockées les bibliothèques javascript pour la partie client (notamment robot.js version client).<br/>
+`tabletApp/` ici ce trouve le code source de l'application tablette utilisant le framework Ionic
 
 ## Fonctionnement de eMQTT.io
 ### Principe de base
@@ -256,16 +257,16 @@ Lorsque le robot n'est pas correctement connecté au serveur, il va se mettre en
 Même si vous pouvez tout à fait inclure la version client de robot.js afin d'utiliser le robot avec les méthodes citées ci-dessus, l'intérêt du projet est que vous pouvez tout faire avec n'importe quelle librairie client d'MQTT et utiliser l'api intégrée. Lors de ce projet, nous avons utiliser mqttjs mais vous pouvez utiliser une librairie dans un autre langage pour contrôler le robot.
 <table>
 <tr><th>Nom</th><th>Paramètres</th><th>Utilisation</th></tr>
-<tr><td>/roomba/datas</td><td>aucun</td><td>Récupère le tableau de données sous ce format:`[{"name":"Velocity","value":0},{"name":"CliffFrontLeftSignal","value":0}...`</td></tr>
-<tr><td>/roomba/getDistance</td><td>aucun</td><td>Demande le rafraîchissement de la distance et l'envoi de `/roomba/distance`</td>
-<tr><td>/roomba/distance</td><td>aucun</td><td>Récupère la distance demandée avec `/roomba/getDistance` (attention distance depuis le départ du robot ou d'un reset)</td>
-<tr><td>/roomba/getPhoneAngle</td><td>aucun</td><td>Demande le rafraîchissement et de retourner l'angle de la tablette sur : `/roomba/angle`</td></tr>
+<tr><td>/roomba/datas</td><td>aucun</td><td>Récupère le tableau de données sous ce format:<pre>[{"name":"Velocity","value":0},{"name":"CliffFrontLeftSignal","value":0}...</pre></td></tr>
+<tr><td>/roomba/getDistance</td><td>aucun</td><td>Demande le rafraîchissement de la distance et l'envoi de <pre>/roomba/distance</pre></td>
+<tr><td>/roomba/distance</td><td>aucun</td><td>Récupère la distance demandée avec <pre>/roomba/getDistance</pre> (attention distance depuis le départ du robot ou d'un reset)</td>
+<tr><td>/roomba/getPhoneAngle</td><td>aucun</td><td>Demande le rafraîchissement et de retourner l'angle de la tablette sur : <pre>/roomba/angle</pre></td></tr>
 <tr><td>/roomba/angle</td><td>aucun</td><td>c'est ici que l'angle de la tablette est récupéré</td></tr>
-<tr><td>/roomba/streamSensors</td><td>`[id1, id2, id3...]`</td><td>Permet d'accéder à la méthode streamSensors de robot.js</td></tr>
+<tr><td>/roomba/streamSensors</td><td><pre>[id1, id2, id3...]</pre></td><td>Permet d'accéder à la méthode streamSensors de robot.js</td></tr>
 <tr><td>/roomba/streamAllSensors</td><td>aucun</td><td>Stream tous les capteurs</td></tr>
-<tr><td>/roomba/strategy</td><td>`StrategyNumber`</td><td>Déclenche la stratégie: `StrategyNumber`sur la machine d'état</td>
+<tr><td>/roomba/strategy</td><td><pre>StrategyNumber</pre></td><td>Déclenche la stratégie: <pre>StrategyNumber</pre>sur la machine d'état</td>
 <tr><td>/roomba/reset</td><td>aucun</td><td>Stoppe le robot et reset la distance</td></tr>
-<tr><td>/roomba/driveDirect</td><td>`[motor1, motor2]`</td><td>Met la puissance du moteur droit sur motor1 et celle du moteur gauche sur motor2</td></tr>
+<tr><td>/roomba/driveDirect</td><td><pre>[motor1, motor2]</pre></td><td>Met la puissance du moteur droit sur motor1 et celle du moteur gauche sur motor2</td></tr>
 </table>
 
 ### Exemple d'utilisation de MQTT.Js
