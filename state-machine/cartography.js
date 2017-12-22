@@ -117,17 +117,11 @@ function convertToRadian (degrees) {
 client.on('message', function choixStrategy (topic, message) {
   if (topic === '/roomba/strategy') {
     strategyNumber = JSON.parse(message);
-    if (strategyNumber==0){resetRoomba();}
+    if (strategyNumber === 0) { resetRoomba(); }
+    console.log(strategyNumber);
+    if (strategyNumber === 1) { bumpAndTurn(topic, message); }
     console.log(strategyNumber);
   }
-  switch (strategyNumber) {
-    case 1: bumpAndTurn(topic, message); break;
-    //case 0: resetRoomba(); break;
-  }
-
-  /* if (topic === '/roomba/reset') {
-    resetRoomba();
-  } */
 });
 
 client.on('connect', function () {
