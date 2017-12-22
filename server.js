@@ -31,11 +31,6 @@ app.use("/style.css", express.static(__dirname + "/roomba-app/style.css"));
 
 app.use('/config', express.static(__dirname + '/config'));
 
-app.get('/launchPointsApp', function (req, res) {
-  console.log("Lancer");
-  res.send('hello world');
-});
-
 app.use("/node_modules", express.static(__dirname + "/roomba-app/node_modules"));
 //Always redirect to "/" in order to use angular routes
 app.use("*", express.static(__dirname  + '/roomba-app/dist'));
